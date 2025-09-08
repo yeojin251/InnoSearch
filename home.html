@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>InnoSearch</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <!-- 상단 고정 네비게이션 -->
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand" href="/">
+        <span class="logo">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 2l8.66 5v10L12 22l-8.66-5V7z" fill="currentColor" opacity=".12" />
+            <path d="M12 6l6.06 3.5v7L12 20l-6.06-3.5v-7z" fill="currentColor" />
+          </svg>
+        </span>
+        <span class="brand-text">InnoSearch</span>
+      </a>
+
+      <!-- 가운데 정렬 메뉴 -->
+      <nav class="menu" aria-label="주요 메뉴">
+        <a href="/matching.html">매칭</a>
+        <a href="/story.html">스토리</a>
+        <a href="/tech.html">유망기술</a>
+        <a href="/notice.html">공지사항</a>
+      </nav>
+
+      <!-- 오른쪽: 로그인(왼쪽) + 회원가입(오른쪽) -->
+      <div class="nav-actions">
+        <a class="link" href="login.html">로그인</a>
+        <a class="btn primary" href="signup.html">회원가입</a>
+      </div>
+    </div>
+  </header>
+
+
+  <main>
+    <!-- 히어로 배너 -->
+    <section class="hero">
+      <div class="container hero-inner">
+        <div class="hero-copy">
+          <div class="hero-tool">
+            <h3>빠른 매칭</h3>
+
+            <div class="tool-card">
+              <!-- 입력 -->
+              <div class="field">
+                <label class="sr-only" for="q">문제/키워드</label>
+                <input id="q" type="text" placeholder="키워드 입력 (예: 친환경)" />
+              </div>
+
+              <!-- 분야 / 지역 -->
+              <div class="row-2">
+                <div class="field">
+                  <label class="sr-only" for="cat">분야</label>
+                  <select id="cat">
+                    <option value="">분야 선택</option>
+                    <option>환경/에너지</option>
+                    <option>모빌리티</option>
+                    <option>바이오/헬스</option>
+                    <option>제조/로보틱스</option>
+                    <option>농식품</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label class="sr-only" for="region">지역</label>
+                  <select id="region">
+                    <option value="">지역 선택</option>
+                    <option>서울</option>
+                    <option>경기</option>
+                    <option>인천</option>
+                    <option>대전</option>
+                    <option>세종</option>
+                    <option>충남</option>
+                    <option>충북</option>
+                    <option selected>전북</option>
+                    <option>전남</option>
+                    <option>부산</option>
+                    <option>대구</option>
+                    <option>울산</option>
+                    <option>경북</option>
+                    <option>경남</option>
+                    <option>강원</option>
+                    <option>제주</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- 버튼 -->
+              <div class="actions">
+                <button class="btn primary" id="matchBtn">매칭 보기</button>
+              </div>
+
+              <!-- 결과 -->
+              <div class="result" id="resultBox">검색 결과 없음</div>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- 데코 모듈(이미지/일러스트 넣어도 됨) -->
+        <div class="hero-art" aria-hidden="true">
+          <div class="bubble b1"></div>
+          <div class="bubble b2"></div>
+          <div class="bubble b3"></div>
+        </div>
+      </div>
+      </div>
+      <!-- 아래 파도형 그라디언트 -->
+      <svg class="hero-wave wave up" viewBox="0 0 1440 160" preserveAspectRatio="none" aria-hidden="true">
+        <path
+          d="M0,64 C180,128 360,0 540,26.7 C720,53.3 900,160 1080,144 C1260,128 1350,96 1440,80 L1440,160 L0,160 Z" />
+      </svg>
+    </section>
+
+    <!-- 최신 리포트 / 공지 -->
+    <section id="updates" class="section">
+      <div class="container section-head">
+        <h2>최신리포트</h2>
+        <a class="link more" href="#">전체 보기</a>
+      </div>
+
+      <div class="container cards">
+        <!-- 카드 1 -->
+        <article class="card">
+          <img class="thumb"
+            src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1200&auto=format&fit=crop"
+            alt="리포트 썸네일">
+          <div class="card-body">
+            <div class="label-wrap">
+              <span class="label hot">이슈 리포트</span>
+              <span class="label green">소비</span>
+              <span class="label blue">산업</span>
+            </div>
+            <h3 class="card-title">8월 5주차 산업군별 소셜 인사이트 & 연관 키워드</h3>
+            <p class="card-desc">10개 산업군 소셜 빅데이터를 분석해 주간 변화와 주요 이슈를 정리했습니다.</p>
+            <div class="meta">
+              <time datetime="2025-09-03">2025-09-03</time>
+              <a href="#" class="text-btn">리포트 열람</a>
+            </div>
+          </div>
+        </article>
+
+        <!-- 카드 2 -->
+        <article class="card">
+          <img class="thumb"
+            src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1200&auto=format&fit=crop"
+            alt="커뮤니티 커머스 썸네일">
+          <div class="card-body">
+            <div class="label-wrap">
+              <span class="label">소비 리포트</span>
+            </div>
+            <h3 class="card-title">취향 공동체의 힘, 커뮤니티 커머스(2025년 8월)</h3>
+            <p class="card-desc">MZ세대 커뮤니티 기반 구매 패턴과 브랜드 인게이지먼트 전략.</p>
+            <div class="meta">
+              <time datetime="2025-08-28">2025-08-28</time>
+              <a href="#" class="text-btn">요약 보기</a>
+            </div>
+          </div>
+        </article>
+
+        <!-- 카드 3 -->
+        <article class="card">
+          <img class="thumb"
+            src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=1200&auto=format&fit=crop"
+            alt="AI 트렌드 썸네일">
+          <div class="card-body">
+            <div class="label-wrap">
+              <span class="label purple">AI 트렌드</span>
+            </div>
+            <h3 class="card-title">생성형 AI가 바꾸는 마케팅 운영 레이어</h3>
+            <p class="card-desc">브랜드 운영 자동화, 콘텐츠 파이프라인, 거버넌스 체크리스트.</p>
+            <div class="meta">
+              <time datetime="2025-08-22">2025-08-22</time>
+              <a href="#" class="text-btn">자세히</a>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 트렌드 키워드 -->
+    <section class="section tags">
+      <div class="container section-head">
+        <h2>트렌드 키워드로 찾아보기</h2>
+      </div>
+
+      <div class="container tag-list" role="list">
+        <a href="#" class="tag" role="listitem">팝업스토어</a>
+        <a href="#" class="tag" role="listitem">MZ세대</a>
+        <a href="#" class="tag" role="listitem">숏폼</a>
+        <a href="#" class="tag" role="listitem">시니어</a>
+        <a href="#" class="tag" role="listitem">취미</a>
+        <a href="#" class="tag" role="listitem">고물가</a>
+        <a href="#" class="tag" role="listitem">AI</a>
+        <a href="#" class="tag" role="listitem">이커머스</a>
+        <a href="#" class="tag" role="listitem">비건</a>
+        <a href="#" class="tag" role="listitem">ESG</a>
+        <a href="#" class="tag" role="listitem">유튜브</a>
+        <a href="#" class="tag" role="listitem">가성비</a>
+        <a href="#" class="tag" role="listitem">1인가구</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container foot">
+      <div class="foot-left">
+        <div class="brand lite">
+          <span class="logo">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 2l8.66 5v10L12 22l-8.66-5V7z" fill="currentColor" opacity=".12" />
+              <path d="M12 6l6.06 3.5v7L12 20l-6.06-3.5v-7z" fill="currentColor" />
+            </svg>
+          </span>
+          <span class="brand-text">InnoSearch</span>
+        </div>
+        <p>© 2025 InnoSearch. All rights reserved.</p>
+      </div>
+      <div class="foot-right">
+        <a href="#">이용약관</a>
+        <a href="#">개인정보처리방침</a>
+        <a href="#">고객센터</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

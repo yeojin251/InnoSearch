@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>로그인 – InnoSearch</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="mem_styles.css" />
+</head>
+<body>
+  <!-- 공통 헤더 -->
+<body class="auth-page">
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand" href="/"><span class="logo">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l8.66 5v10L12 22l-8.66-5V7z" fill="currentColor" opacity=".12"/><path d="M12 6l6.06 3.5v7L12 20l-6.06-3.5v-7z" fill="currentColor"/></svg>
+      </span><span class="brand-text">InnoSearch</span></a>
+
+      <nav class="menu" aria-label="주요 메뉴">
+        <a href="/matching.html">매칭</a>
+        <a href="/story.html">스토리</a>
+        <a href="/tech.html">유망기술</a>
+        <a href="/notice.html">공지사항</a>
+      </nav>
+
+      <div class="nav-actions">
+        <a class="link" href="/login.html">로그인</a>
+        <a class="btn primary" href="/signup.html">회원가입</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="auth">
+    <!-- 상단 얕은 히어로 -->
+    <section class="auth-hero">
+      <div class="container">
+        <h1>로그인</h1>
+        <p class="sub">인사이트 대시보드와 매칭 서비스를 이용하려면 로그인하세요.</p>
+      </div>
+    </section>
+
+    <!-- 카드 -->
+    <section class="auth-body">
+      <div class="container">
+        <form class="auth-card" action="#" method="post" novalidate>
+          <div class="field">
+            <label for="email">이메일</label>
+            <input id="email" name="email" type="email" placeholder="you@example.com" required>
+          </div>
+
+          <div class="field">
+            <label for="pw">비밀번호</label>
+            <div class="pw-wrap">
+              <input id="pw" name="password" type="password" placeholder="••••••••" required minlength="6">
+              <button type="button" class="pw-toggle" aria-label="비밀번호 표시" onclick="togglePw('pw', this)">보기</button>
+            </div>
+          </div>
+
+          <div class="row-2 between">
+            <label class="check"><input type="checkbox" id="remember"> 자동 로그인</label>
+            <a class="muted" href="#">비밀번호 찾기</a>
+          </div>
+
+          <button class="btn primary full" type="submit">로그인</button>
+
+          <p class="muted center small">
+            아직 계정이 없나요? <a class="link-strong" href="/signup.html">회원가입</a>
+          </p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container foot">
+      <div class="brand lite">
+        <span class="logo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l8.66 5v10L12 22l-8.66-5V7z" fill="currentColor" opacity=".12"/><path d="M12 6l6.06 3.5v7L12 20l-6.06-3.5v-7z" fill="currentColor"/></svg></span>
+        <span class="brand-text">InnoSearch</span>
+      </div>
+      <div class="foot-right">
+        <a href="#">이용약관</a><a href="#">개인정보처리방침</a><a href="#">고객센터</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function togglePw(id, btn){
+      const el = document.getElementById(id);
+      el.type = el.type === 'password' ? 'text' : 'password';
+      btn.textContent = el.type === 'password' ? '보기' : '숨기기';
+    }
+  </script>
+</body>
+</html>
