@@ -38,7 +38,7 @@
     <section class="auth-hero">
       <div class="container">
         <h1>로그인</h1>
-        <p class="sub">인사이트 대시보드와 매칭 서비스를 이용하려면 로그인하세요.</p>
+        <p class="sub">InnoSearch 사용을 위해 로그인하세요.</p>
       </div>
     </section>
 
@@ -47,21 +47,16 @@
       <div class="container">
         <form class="auth-card" action="#" method="post" novalidate>
           <div class="field">
-            <label for="email">이메일</label>
-            <input id="email" name="email" type="email" placeholder="you@example.com" required>
+            <label for="id">아이디</label>
+            <input id="id" name="id" type="id" required>
           </div>
 
           <div class="field">
             <label for="pw">비밀번호</label>
             <div class="pw-wrap">
-              <input id="pw" name="password" type="password" placeholder="••••••••" required minlength="6">
+              <input id="pw" name="password" type="password" required minlength="6">
               <button type="button" class="pw-toggle" aria-label="비밀번호 표시" onclick="togglePw('pw', this)">보기</button>
             </div>
-          </div>
-
-          <div class="row-2 between">
-            <label class="check"><input type="checkbox" id="remember"> 자동 로그인</label>
-            <a class="muted" href="#">비밀번호 찾기</a>
           </div>
 
           <button class="btn primary full" type="submit">로그인</button>

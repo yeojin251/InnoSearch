@@ -20,7 +20,7 @@ body{
 .auth-hero{
   background: var(--bg-hero);
   color: #fff;
-  padding: 48px 0;
+  padding: 50px 0;
   border-bottom: 1px solid #ffffff20;
 }
 .auth-hero h1{
@@ -36,19 +36,19 @@ body{
 /* ====== 본문 카드 ====== */
 .auth-body{
   background:#fff;
-  padding: 24px 0 56px;
+  padding: 30px 0 60px;
 }
 .auth-card{
   width: min(720px, 100%);
-  margin: -32px auto 0;              /* 히어로와 살짝 겹침 */
-  padding: 20px 18px;
-  background: rgba(6,10,30,.75);     /* 유리 느낌 다크 카드 */
+  margin: -40px auto 0;              /* 히어로와 살짝 겹침 */
+  padding: 30px 18px;
+  background: var(--bg-hero);  /* 반투명 그라디언트 배경 */
   border: 1px solid #ffffff26;
   border-radius: 16px;
   color: var(--text);
   -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
-  box-shadow: 0 16px 36px rgba(2,6,23,.25);
+  box-shadow: 0 16px 36px rgba(13, 24, 72, 0.25);
 }
 
 /* ====== 폼 구성요소 ====== */
@@ -61,7 +61,7 @@ body{
 .auth-card select{
   width:100%; height:46px; padding:0 12px;
   border-radius:10px;
-  background:#0f1532;
+  background:linear-gradient(180deg, #0e1330 0%, #0b1020 100%);
   border:1px solid #2b365c;
   color:#e5e7eb; outline:none;
 }
@@ -104,7 +104,10 @@ body{
 
 /* 페이지 전체 배경을 다크 그라디언트로(흰 띠 제거) */
 :root{
-  --page-bg: linear-gradient(180deg, #0e1330 0%, #0b1020 100%);
+  --page-bg: 
+    radial-gradient(1400px 820px at 50% -12%, rgba(79,102,241,.34) 0%, transparent 68%),
+    radial-gradient(1200px 700px at 85% -8%, rgba(20,184,166,.22) 0%, transparent 62%),
+    linear-gradient(180deg, #0f1a47 0%, #0b1020 100%);
 }
 
 .auth-page{
@@ -113,6 +116,7 @@ body{
   flex-direction: column;     /* header -> main -> footer */
   background: var(--page-bg);
   color: var(--text);
+  background-repeat: no-repeat; background-attachment:  fixed, fixed, fixed;
 }
 
 /* main이 남는 공간을 채워 footer가 항상 바닥에 */
@@ -127,16 +131,18 @@ body{
   border-bottom: none;
 }
 .auth-page .auth-body{
-  background: transparent;    /* ⬅️ 흰색 배경 제거 포인트 */
+  background: transparent;
   padding: 12px 0 56px;
+  position: relative;
+  z-index: 0;
 }
 
 /* 카드 톤은 유지 */
 .auth-page .auth-card{
-  background: rgba(15, 21, 50, .85);
-  border: 1px solid #ffffff26;
+  background: linear-gradient(180deg, rgba(19,27,66,.88), rgba(16,22,54,.88));
+  border: 1px solid rgba(255,255,255,.22);
   box-shadow: 0 16px 36px rgba(2,6,23,.25);
-  margin-top: 0;              /* 필요시 겹침 제거 */
+  margin-top: clamp(15px, 4vw, 25px);              /* 필요시 겹침 제거 */
 }
 
 /* =========================
