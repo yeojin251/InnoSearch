@@ -1,3 +1,4 @@
+// routes/matching.js
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
@@ -5,110 +6,107 @@ const iconv = require('iconv-lite');
 
 const router = express.Router();
 
-// CSV 데이터를 메모리에 캐시
+// ====== 메모리 캐시 ======
 let techData1 = [];
 let techData2 = [];
+let csvLoaded = false;
 
-// CSV 파싱 함수
+// ====== CSV 파서 ======
 function parseCSV(csvContent) {
   const lines = csvContent.trim().split('\n');
   const headers = lines[0].split(',').map(h => h.trim());
   const results = [];
 
   for (let i = 1; i < lines.length; i++) {
-    if (lines[i].trim()) {
-      const values = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-      const row = {};
-      headers.forEach((header, index) => {
-        if (values[index]) {
-          let value = values[index].trim();
-          if (value.startsWith('"') && value.endsWith('"')) {
-            value = value.substring(1, value.length - 1);
-          }
-          row[header] = value;
-        } else {
-          row[header] = '';
-        }
-      });
-      results.push(row);
-    }
+    const line = lines[i];
+    if (!line || !line.trim()) continue;
+
+    // 따옴표 안의 콤마는 분리하지 않도록 정규식 사용
+    const values = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+    const row = {};
+    headers.forEach((header, index) => {
+      let value = (values[index] ?? '').trim();
+      if (value.startsWith('"') && value.endsWith('"')) {
+        value = value.slice(1, -1);
+      }
+      row[header] = value;
+    });
+    results.push(row);
   }
   return results;
 }
 
-// CSV 파일 로드 함수 (iconv-lite 적용)
-function loadCSVData() {
+// ====== CSV 로더 (EUC-KR) ======
+async function loadCSVData() {
+  if (csvLoaded) return; // 이미 로드됨
   try {
-    // cleanContent 함수 오타 수정
-    const cleanContent = (content) => {
-      return content.replace(/\r/g, '');
-    };
-
     const decodeFile = (filePath) => {
       const buffer = fs.readFileSync(filePath);
-      return iconv.decode(buffer, 'euc-kr');
+      // 파일 인코딩이 EUC-KR 이라 가정
+      return iconv.decode(buffer, 'euc-kr').replace(/\r/g, '');
     };
 
-    let csv1Content = decodeFile(path.join(__dirname, '../data/tech_data1.csv'));
-    techData1 = parseCSV(cleanContent(csv1Content));
-    console.log(`✅ tech_data1.csv 로드 완료: ${techData1.length}개 항목`);
+    const csv1Path = path.join(__dirname, '../data/tech_data1.csv');
+    const csv2Path = path.join(__dirname, '../data/tech_data2.csv');
 
-    let csv2Content = decodeFile(path.join(__dirname, '../data/tech_data2.csv'));
-    techData2 = parseCSV(cleanContent(csv2Content));
-    console.log(`✅ tech_data2.csv 로드 완료: ${techData2.length}개 항목`);
+    const csv1 = decodeFile(csv1Path);
+    const csv2 = decodeFile(csv2Path);
 
-    return Promise.resolve();
-  } catch (error) {
-    console.error('CSV 파일 로드 실패:', error);
-    return Promise.reject(error);
+    techData1 = parseCSV(csv1);
+    techData2 = parseCSV(csv2);
+
+    csvLoaded = true;
+    console.log(`✅ tech_data1.csv: ${techData1.length}개 | tech_data2.csv: ${techData2.length}개 로드`);
+  } catch (err) {
+    console.error('❌ CSV 파일 로드 실패:', err);
+    throw err;
   }
 }
 
+// 서버 구동 시점에 미리 로드 (실패해도 서버는 뜨게 하고, 첫 요청 시 재시도)
+loadCSVData().catch(() => {
+  console.warn('⚠️ 서버는 실행되지만 CSV 로드는 실패. 첫 요청에서 다시 시도합니다.');
+});
 
-// 기술 검색 함수
+// ====== 검색 로직 ======
 function searchTechnologies(keyword) {
-  const results = [];
+  const K = keyword.toLowerCase();
+  const out = new Set();
 
-  techData1.forEach((item) => {
-    const techName = item['기술명'] || '';
-    if (techName.includes(keyword)) {
-      results.push(techName);
-    }
-  });
+  const pushIfMatch = (item) => {
+    const name = (item['기술명'] || '').trim();
+    if (!name) return;
+    if (name.toLowerCase().includes(K)) out.add(name);
+  };
 
-  techData2.forEach((item) => {
-    const techName = item['기술명'] || '';
-    if (techName.includes(keyword)) {
-      results.push(techName);
-    }
-  });
+  techData1.forEach(pushIfMatch);
+  techData2.forEach(pushIfMatch);
 
-  return results;
+  return Array.from(out);
 }
 
-// 빠른 매칭 API
-router.post('/search', (req, res) => {
+// ====== API ======
+router.post('/search', async (req, res) => {
   try {
-    const { keyword } = req.body;
-    if (!keyword || keyword.trim().length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: '검색 키워드를 입력해주세요.'
-      });
+    const { keyword } = req.body || {};
+    if (!keyword || !keyword.trim()) {
+      return res.status(400).json({ success: false, message: '검색 키워드를 입력해주세요.' });
     }
+
+    if (!csvLoaded) {
+      await loadCSVData(); // 첫 요청에서 재시도
+    }
+
     const results = searchTechnologies(keyword.trim());
-    res.json({
+    return res.json({
       success: true,
       keyword: keyword.trim(),
       totalCount: results.length,
-      results: results.slice(0, 50) // 필요시 더 늘릴 수 있음
+      results: results.slice(0, 50) // 필요 시 늘리기 가능
     });
   } catch (error) {
     console.error('기술 검색 오류:', error);
-    res.status(500).json({
-      success: false,
-      message: '검색 중 오류가 발생했습니다.'
-    });
+    return res.status(500).json({ success: false, message: '검색 중 오류가 발생했습니다.' });
   }
 });
 

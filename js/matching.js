@@ -1,123 +1,88 @@
-// 빠른 매칭 기능
+// public/js/matching.js
+document.addEventListener('DOMContentLoaded', () => {
+  const input = document.getElementById('q');
+  const btn = document.getElementById('matchBtn');
+  const box = document.getElementById('matchingResults');
 
-class MatchingSystem {
-  constructor() {
-    this.init();
+  const API_BASE = '/api/matching';
+
+  function htmlEscape(s) {
+    return String(s)
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#39;');
   }
 
-  init() {
-    this.setupEventListeners();
-  }
+  function render(data) {
+    if (!box) return;
+    box.innerHTML = '';
 
-  // 이벤트 리스너 설정
-  setupEventListeners() {
-    const matchBtn = document.getElementById('matchBtn');
-    if (matchBtn) {
-      matchBtn.addEventListener('click', () => this.handleSearch());
-    }
+    // 컨테이너 기본 스타일(필요하면 CSS로 옮겨도 됨)
+    box.style.marginTop = '12px';
+    box.style.borderTop = '1px solid #eee';
+    box.style.paddingTop = '12px';
 
-    // Enter 키로 검색
-    const keywordInput = document.getElementById('q');
-    if (keywordInput) {
-      keywordInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-          this.handleSearch();
-        }
-      });
-    }
-  }
-
-
-  // 검색 실행
-  async handleSearch() {
-    const keywordInput = document.getElementById('q');
-    const resultBox = document.getElementById('resultBox');
-
-    if (!keywordInput || !resultBox) {
-      console.error('필수 요소를 찾을 수 없습니다.');
+    if (!data || data.success === false) {
+      box.innerHTML = `<p class="empty">검색 중 오류가 발생했어요. ${data?.message ? htmlEscape(data.message) : ''}</p>`;
       return;
     }
 
-    const keyword = keywordInput.value.trim();
+    const { keyword, totalCount, results } = data;
 
-    if (!keyword) {
-      resultBox.innerHTML = '<div class="error">검색 키워드를 입력해주세요.</div>';
+    const head = document.createElement('div');
+    head.className = 'results-head';
+    head.style.marginBottom = '8px';
+    head.innerHTML = `<strong>"${htmlEscape(keyword)}"</strong> 검색 결과 <b>${totalCount}</b>건`;
+    box.appendChild(head);
+
+    if (!totalCount) {
+      box.insertAdjacentHTML('beforeend', '<p class="empty">일치하는 결과가 없습니다.</p>');
       return;
     }
 
-    // 로딩 표시
-    resultBox.innerHTML = '<div class="loading">검색 중...</div>';
+    const ul = document.createElement('ul');
+    ul.className = 'result-list';
+    ul.style.listStyle = 'disc';
+    ul.style.paddingLeft = '20px';
+    ul.style.lineHeight = '1.7';
 
-    try {
-      const response = await window.apiClient.post('/matching/search', {
-        keyword: keyword
-      });
-
-      if (response.success) {
-        this.displayResults(response);
-      } else {
-        resultBox.innerHTML = `<div class="error">${response.message}</div>`;
-      }
-    } catch (error) {
-      console.error('검색 오류:', error);
-      resultBox.innerHTML = '<div class="error">검색 중 오류가 발생했습니다.</div>';
-    }
-  }
-
-  // 검색 결과 표시
-  displayResults(response) {
-    const resultBox = document.getElementById('resultBox');
-    
-    if (!resultBox) return;
-
-    const { keyword, totalCount, results } = response;
-
-    if (totalCount === 0) {
-      resultBox.innerHTML = `
-        <div class="no-results">
-          <h3>'${keyword}'에 대한 검색 결과가 없습니다.</h3>
-          <p>다른 키워드로 검색해보세요.</p>
-        </div>
-      `;
-      return;
-    }
-
-    let html = `
-      <div class="search-results">
-        <div class="results-header">
-          <h3>'${keyword}' 검색 결과</h3>
-          <p class="results-count">총 ${totalCount}개의 기술을 찾았습니다.</p>
-        </div>
-        <div class="results-list">
-    `;
-
-    results.forEach((result, index) => {
-      html += `
-        <div class="result-item">
-          <div class="result-header">
-            <h4 class="tech-name">${result.techName}</h4>
-            <span class="source-badge ${result.source}">${result.source === 'tech_data1' ? '특구기술' : '일반기술'}</span>
-          </div>
-          <div class="result-details">
-            ${result.inventionName && result.inventionName !== result.techName ? `<p class="invention-name"><strong>발명명:</strong> ${result.inventionName}</p>` : ''}
-            ${result.organization ? `<p class="organization"><strong>기관:</strong> ${result.organization}</p>` : ''}
-            ${result.applicationNumber ? `<p class="application"><strong>출원번호:</strong> ${result.applicationNumber}</p>` : ''}
-          </div>
-        </div>
-      `;
+    results.forEach((name) => {
+      const li = document.createElement('li');
+      li.textContent = name; // 기술명 그대로 표시
+      ul.appendChild(li);
     });
 
-    html += `
-        </div>
-        ${totalCount > 50 ? `<p class="more-results">더 많은 결과가 있습니다. 검색 키워드를 더 구체적으로 입력해보세요.</p>` : ''}
-      </div>
-    `;
-
-    resultBox.innerHTML = html;
+    box.appendChild(ul);
   }
-}
 
-// 페이지 로드 시 초기화
-document.addEventListener('DOMContentLoaded', () => {
-  new MatchingSystem();
+  async function search() {
+    const keyword = (input.value || '').trim();
+    if (!keyword) {
+      render({ success: true, keyword: '', totalCount: 0, results: [] });
+      return;
+    }
+
+    box.innerHTML = '<p class="loading">검색 중…</p>';
+
+    try {
+      const resp = await fetch(`${API_BASE}/search`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ keyword }),
+      });
+      const data = await resp.json();
+      render(data);
+    } catch (err) {
+      render({ success: false, message: err.message || '네트워크 오류' });
+    }
+  }
+
+  // 이벤트 바인딩
+  btn?.addEventListener('click', search);
+  input?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') search();
+  });
 });
