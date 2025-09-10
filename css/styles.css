@@ -130,6 +130,13 @@ img{ display:block; width:100%; height:auto; border-radius: 14px; }
   padding: 0 12px; border-radius: 10px; background:#0f1532; border:1px solid #2b365c; color:#cbd5e1;
 }
 
+#resultContainer {
+  max-width: 600px;
+  margin: 20px auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
 /* 히어로 데코 버블 */
 .hero-art{ position:relative; min-height: 240px; }
 @media (min-width: 960px){ .hero-art{ min-height: 360px; } }
