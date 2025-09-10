@@ -3,16 +3,16 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ë§ˆì´í˜ì´ì§€ Â· InnoSearch</title>
+  <title>¸¶ÀÌÆäÀÌÁö ¡¤ InnoSearch</title>
 
-  <!-- ì‚¬ì´íŠ¸ ê³µí†µ / ë©¤ë²„ ì „ìš© í…Œë§ˆ -->
+  <!-- »çÀÌÆ® °øÅë / ¸â¹ö Àü¿ë Å×¸¶ -->
   <link rel="stylesheet" href="./css/styles.css" />
   <link rel="stylesheet" href="./css/mem_styles.css" />
 
   <style>
-    /* ===== ë§ˆì´í˜ì´ì§€ ì „ìš© ë³´ì¡° ìŠ¤íƒ€ì¼ ===== */
+    /* ===== ¸¶ÀÌÆäÀÌÁö Àü¿ë º¸Á¶ ½ºÅ¸ÀÏ ===== */
 
-    /* ë¡œê·¸ì¸/íšŒì›ê°€ì…ê³¼ ë™ì¼í•˜ê²Œ: ì¤‘ì•™ ì •ë ¬ íˆì–´ë¡œ */
+    /* ·Î±×ÀÎ/È¸¿ø°¡ÀÔ°ú µ¿ÀÏÇÏ°Ô: Áß¾Ó Á¤·Ä È÷¾î·Î */
     .mp-hero{ text-align:center; }
     .mp-hero .container{
       width: min(1100px, 92%);
@@ -26,7 +26,7 @@
     }
     .mp-hero .sub{ margin:0; }
 
-    /* ê°œìš” ì¹´ë“œ (ì¤‘ì•™, mem_styles í†¤) */
+    /* °³¿ä Ä«µå (Áß¾Ó, mem_styles Åæ) */
     .overview-card{
       width: min(1100px, 92%);
       margin: 0 auto;
@@ -50,7 +50,7 @@
     .ov-main h1{ margin:2px 0 4px; font-size: clamp(20px, 2.6vw, 26px); }
     .mini{ color:#cbd5e1; font-size:13px; }
 
-    /* ìš”ì•½ í†µê³„ */
+    /* ¿ä¾à Åë°è */
     .quick-stats{
       display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; margin-top: 12px;
     }
@@ -71,7 +71,7 @@
       .quick-stats{ grid-template-columns: 1fr 1fr; }
     }
 
-    /* footer í•­ìƒ í•˜ë‹¨ (auth-pageì™€ í•¨ê»˜ ë™ì‘) */
+    /* footer Ç×»ó ÇÏ´Ü (auth-page¿Í ÇÔ²² µ¿ÀÛ) */
     .auth-page{ min-height:100vh; display:flex; flex-direction:column; }
     .auth-page main{ flex:1 0 auto; }
     .auth-page .site-footer{ margin-top:auto; }
@@ -79,10 +79,10 @@
 </head>
 
 <body class="auth-page">
-  <!-- ìƒë‹¨ ê³µí†µ ë„¤ë¹„ -->
+  <!-- »ó´Ü °øÅë ³×ºñ -->
   <header class="site-header">
     <div class="container nav">
-      <a class="brand" href="./home.html" aria-label="í™ˆìœ¼ë¡œ">
+      <a class="brand" href="./home.html" aria-label="È¨À¸·Î">
         <span class="logo" aria-hidden="true">
           <svg viewBox="0 0 24 24" width="24" height="24">
             <path d="M12 2l8.66 5v10L12 22l-8.66-5V7z" fill="currentColor" opacity=".12"/>
@@ -92,52 +92,52 @@
         <span class="brand-text">InnoSearch</span>
       </a>
 
-      <nav class="menu" aria-label="ì£¼ìš” ë©”ë‰´">
-        <a href="./matching.html">ë§¤ì¹­</a>
-        <a href="./story.html">ìŠ¤í† ë¦¬</a>
-        <a href="./tech.html">ìœ ë§ê¸°ìˆ </a>
-        <a href="./notice.html">ê³µì§€ì‚¬í•­</a>
+      <nav class="menu" aria-label="ÁÖ¿ä ¸Ş´º">
+        <a href="./matching.html">¸ÅÄª</a>
+        <a href="./story.html">½ºÅä¸®</a>
+        <a href="./tech.html">À¯¸Á±â¼ú</a>
+        <a href="./notice.html">°øÁö»çÇ×</a>
       </nav>
     </div>
   </header>
 
   <main>
-    <!-- ë¡œê·¸ì¸/íšŒì›ê°€ì…ê³¼ ë™ì¼í•œ ì¤‘ì•™ íˆì–´ë¡œ -->
+    <!-- ·Î±×ÀÎ/È¸¿ø°¡ÀÔ°ú µ¿ÀÏÇÑ Áß¾Ó È÷¾î·Î -->
     <section class="auth-hero mp-hero">
       <div class="container">
-        <h1>ë§ˆì´í˜ì´ì§€</h1>
-        <p class="sub">í™œë™ ë‚´ì—­ì„ í•œ ê³³ì—ì„œ ê´€ë¦¬í•©ë‹ˆë‹¤.</p>
+        <h1>¸¶ÀÌÆäÀÌÁö</h1>
+        <p class="sub">È°µ¿ ³»¿ªÀ» ÇÑ °÷¿¡¼­ °ü¸®ÇÕ´Ï´Ù.</p>
       </div>
     </section>
 
-    <!-- ê°œìš” ì¹´ë“œ -->
+    <!-- °³¿ä Ä«µå -->
     <section class="auth-body" style="padding-top:16px;">
       <div class="overview-card">
         <div class="avatar" aria-hidden="true"></div>
 
         <div class="ov-main">
-          <h1 id="user-name">ë¡œë”© ì¤‘... <span class="mini" id="user-org">ì†Œì†/ê¸°ì—…ëª…:</span></h1>
+          <h1 id="user-name">·Îµù Áß... <span class="mini" id="user-org">¼Ò¼Ó/±â¾÷¸í:</span></h1>
 
-          <div class="quick-stats" aria-label="ìš”ì•½ í†µê³„">
-            <div class="stat"><div class="num">0</div><div class="lab">ì €ì¥í•œ ë¦¬í¬íŠ¸</div></div>
-            <div class="stat"><div class="num">0</div><div class="lab">ë§¤ì¹­ ë‚´ì—­</div></div>
-            <div class="stat"><div class="num">0</div><div class="lab">ì•Œë¦¼</div></div>
+          <div class="quick-stats" aria-label="¿ä¾à Åë°è">
+            <div class="stat"><div class="num">0</div><div class="lab">ÀúÀåÇÑ ¸®Æ÷Æ®</div></div>
+            <div class="stat"><div class="num">0</div><div class="lab">¸ÅÄª ³»¿ª</div></div>
+            <div class="stat"><div class="num">0</div><div class="lab">¾Ë¸²</div></div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- íšŒì› íƒˆí‡´ ë²„íŠ¼ (ë°•ìŠ¤ ë°– í•˜ë‹¨ ì˜¤ë¥¸ìª½) -->
+    <!-- È¸¿ø Å»Åğ ¹öÆ° (¹Ú½º ¹Û ÇÏ´Ü ¿À¸¥ÂÊ) -->
     <section class="auth-body" style="padding-top: 0;">
       <div class="container" style="text-align: right;">
         <button id="deleteAccountBtn" class="btn" style="background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 14px;">
-          íšŒì› íƒˆí‡´
+          È¸¿ø Å»Åğ
         </button>
       </div>
     </section>
   </main>
 
-  <!-- í•˜ë‹¨ ê³µí†µ -->
+  <!-- ÇÏ´Ü °øÅë -->
   <footer class="site-footer">
     <div class="container foot">
       <div class="brand lite">
@@ -150,9 +150,9 @@
         <span class="brand-text">InnoSearch</span>
       </div>
       <div class="foot-right">
-        <a href="#">ì´ìš©ì•½ê´€</a>
-        <a href="#">ê°œì¸ì •ë³´ì²˜ë¦¬ë°©ì¹¨</a>
-        <a href="#">ê³ ê°ì„¼í„°</a>
+        <a href="#">ÀÌ¿ë¾à°ü</a>
+        <a href="#">°³ÀÎÁ¤º¸Ã³¸®¹æÄ§</a>
+        <a href="#">°í°´¼¾ÅÍ</a>
       </div>
     </div>
   </footer>
@@ -160,43 +160,43 @@
   <script src="./js/apiClient.js"></script>
   <script src="./js/session.js"></script>
   <script>
-    // ë§ˆì´í˜ì´ì§€ ì‚¬ìš©ì ì •ë³´ ë¡œë“œ
+    // ¸¶ÀÌÆäÀÌÁö »ç¿ëÀÚ Á¤º¸ ·Îµå
     document.addEventListener('DOMContentLoaded', async () => {
       try {
-        // ë¡œê·¸ì¸ ìƒíƒœ í™•ì¸
+        // ·Î±×ÀÎ »óÅÂ È®ÀÎ
         const response = await window.apiClient.get('/me');
         if (response.success) {
           const user = response.user;
           
-          // ì‚¬ìš©ì ì´ë¦„ í‘œì‹œ
+          // »ç¿ëÀÚ ÀÌ¸§ Ç¥½Ã
           const userNameElement = document.getElementById('user-name');
           if (userNameElement) {
-            userNameElement.innerHTML = `${user.name} <span class="mini" id="user-org">ì†Œì†/ê¸°ì—…ëª…: ${user.organization || 'ë¯¸ì„¤ì •'}</span>`;
+            userNameElement.innerHTML = `${user.name} <span class="mini" id="user-org">¼Ò¼Ó/±â¾÷¸í: ${user.organization || '¹Ì¼³Á¤'}</span>`;
           }
         } else {
-          // ë¡œê·¸ì¸í•˜ì§€ ì•Šì€ ê²½ìš° ë¡œê·¸ì¸ í˜ì´ì§€ë¡œ ë¦¬ë‹¤ì´ë ‰íŠ¸
+          // ·Î±×ÀÎÇÏÁö ¾ÊÀº °æ¿ì ·Î±×ÀÎ ÆäÀÌÁö·Î ¸®´ÙÀÌ·ºÆ®
           window.location.href = '/login';
         }
       } catch (error) {
-        console.error('ì‚¬ìš©ì ì •ë³´ ë¡œë“œ ì‹¤íŒ¨:', error);
-        // ë¡œê·¸ì¸í•˜ì§€ ì•Šì€ ê²½ìš° ë¡œê·¸ì¸ í˜ì´ì§€ë¡œ ë¦¬ë‹¤ì´ë ‰íŠ¸
+        console.error('»ç¿ëÀÚ Á¤º¸ ·Îµå ½ÇÆĞ:', error);
+        // ·Î±×ÀÎÇÏÁö ¾ÊÀº °æ¿ì ·Î±×ÀÎ ÆäÀÌÁö·Î ¸®´ÙÀÌ·ºÆ®
         window.location.href = '/login';
       }
     });
 
-    // íšŒì› íƒˆí‡´ ê¸°ëŠ¥
+    // È¸¿ø Å»Åğ ±â´É
     document.getElementById('deleteAccountBtn').addEventListener('click', async () => {
-      if (confirm('ì •ë§ë¡œ íšŒì› íƒˆí‡´ë¥¼ í•˜ì‹œê² ìŠµë‹ˆê¹Œ?\níƒˆí‡´ í›„ì—ëŠ” ëª¨ë“  ë°ì´í„°ê°€ ì‚­ì œë˜ë©° ë³µêµ¬í•  ìˆ˜ ì—†ìŠµë‹ˆë‹¤.')) {
-        if (confirm('ë§ˆì§€ë§‰ í™•ì¸ì…ë‹ˆë‹¤.\nì •ë§ë¡œ íƒˆí‡´í•˜ì‹œê² ìŠµë‹ˆê¹Œ?')) {
+      if (confirm('Á¤¸»·Î È¸¿ø Å»Åğ¸¦ ÇÏ½Ã°Ú½À´Ï±î?\nÅ»Åğ ÈÄ¿¡´Â ¸ğµç µ¥ÀÌÅÍ°¡ »èÁ¦µÇ¸ç º¹±¸ÇÒ ¼ö ¾ø½À´Ï´Ù.')) {
+        if (confirm('¸¶Áö¸· È®ÀÎÀÔ´Ï´Ù.\nÁ¤¸»·Î Å»ÅğÇÏ½Ã°Ú½À´Ï±î?')) {
           try {
             const response = await window.apiClient.delete('/account');
             if (response.success) {
-              alert('íšŒì› íƒˆí‡´ê°€ ì™„ë£Œë˜ì—ˆìŠµë‹ˆë‹¤.');
+              alert('È¸¿ø Å»Åğ°¡ ¿Ï·áµÇ¾ú½À´Ï´Ù.');
               window.location.href = '/home';
             }
           } catch (error) {
-            console.error('íšŒì› íƒˆí‡´ ì‹¤íŒ¨:', error);
-            alert('íšŒì› íƒˆí‡´ ì¤‘ ì˜¤ë¥˜ê°€ ë°œìƒí–ˆìŠµë‹ˆë‹¤.');
+            console.error('È¸¿ø Å»Åğ ½ÇÆĞ:', error);
+            alert('È¸¿ø Å»Åğ Áß ¿À·ù°¡ ¹ß»ıÇß½À´Ï´Ù.');
           }
         }
       }
