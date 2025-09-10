@@ -215,3 +215,159 @@ img{ display:block; width:100%; height:auto; border-radius: 14px; }
 
 /* ===== 접근성 ===== */
 .sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+
+/* ===== 빠른 매칭 검색 결과 ===== */
+.search-results {
+  margin-top: 20px;
+}
+
+.results-header {
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.results-header h3 {
+  margin: 0 0 5px 0;
+  color: #1f2937;
+  font-size: 18px;
+}
+
+.results-count {
+  margin: 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.results-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.result-item {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  transition: all 0.2s ease;
+}
+
+.result-item:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.result-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.tech-name {
+  margin: 0;
+  color: #1f2937;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.4;
+  flex: 1;
+  margin-right: 12px;
+}
+
+.source-badge {
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.source-badge.tech_data1 {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.source-badge.tech_data2 {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.result-details {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.result-details p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #4b5563;
+}
+
+.result-details strong {
+  color: #374151;
+  font-weight: 600;
+}
+
+.no-results {
+  text-align: center;
+  padding: 40px 20px;
+  color: #6b7280;
+}
+
+.no-results h3 {
+  margin: 0 0 8px 0;
+  color: #374151;
+}
+
+.no-results p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.loading {
+  text-align: center;
+  padding: 20px;
+  color: #6b7280;
+  font-style: italic;
+}
+
+.error {
+  text-align: center;
+  padding: 20px;
+  color: #dc2626;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+}
+
+.more-results {
+  text-align: center;
+  margin-top: 16px;
+  padding: 12px;
+  background: #f3f4f6;
+  border-radius: 8px;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .result-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .tech-name {
+    margin-right: 0;
+  }
+  
+  .result-item {
+    padding: 12px;
+  }
+}

@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="./css/styles.css" />
 </head>
 
 <body>
@@ -34,8 +34,11 @@
 
       <!-- 오른쪽 액션 -->
       <div class="nav-actions">
-        <a class="link" href="./login.html">로그인</a>
-        <a class="btn primary" href="./signup.html">회원가입</a>
+        <a class="link" id="btn-login" href="./login.html">로그인</a>
+        <a class="btn primary" id="btn-signup" href="./signup.html">회원가입</a>
+        <a class="link" id="btn-mypage" href="./myLab.html" style="display: none;">마이페이지</a>
+        <a class="link" id="btn-logout" href="#" style="display: none;">로그아웃</a>
+        <span id="user-display" style="display: none; margin-right: 10px; color: #666;"></span>
       </div>
     </div>
   </header>
@@ -56,31 +59,6 @@
                 <input id="q" type="text" placeholder="키워드 입력 (예: 친환경)" />
               </div>
 
-              <!-- 분야 / 지역 -->
-              <div class="row-2">
-                <div class="field">
-                  <label class="sr-only" for="cat">분야</label>
-                  <select id="cat">
-                    <option value="">분야 선택</option>
-                    <option>환경/에너지</option>
-                    <option>모빌리티</option>
-                    <option>바이오/헬스</option>
-                    <option>제조/로보틱스</option>
-                    <option>농식품</option>
-                  </select>
-                </div>
-                <div class="field">
-                  <label class="sr-only" for="region">지역</label>
-                  <select id="region">
-                    <option value="">지역 선택</option>
-                    <option>서울</option><option>경기</option><option>인천</option>
-                    <option>대전</option><option>세종</option><option>충남</option><option>충북</option>
-                    <option selected>전북</option><option>전남</option>
-                    <option>부산</option><option>대구</option><option>울산</option>
-                    <option>경북</option><option>경남</option><option>강원</option><option>제주</option>
-                  </select>
-                </div>
-              </div>
 
               <!-- 버튼 -->
               <div class="actions">
@@ -110,7 +88,7 @@
     <!-- 최신 리포트 -->
     <section id="updates" class="section">
       <div class="container section-head">
-        <h2>최신리포트</h2>
+        <h2>최신 리포트</h2>
         <a class="link more" href="#">전체 보기</a>
       </div>
 
@@ -207,13 +185,8 @@
     </div>
   </footer>
 
-  <script>
-    // 데모용 버튼 동작
-    const $ = (s) => document.querySelector(s);
-    $('#matchBtn')?.addEventListener('click', () => {
-      const q = $('#q').value.trim();
-      $('#resultBox').textContent = q ? `‘${q}’에 대한 매칭 결과 준비 중…` : '검색 결과 없음';
-    });
-  </script>
+  <script src="./js/apiClient.js"></script>
+  <script src="./js/session.js"></script>
+  <script src="./js/matching.js"></script>
 </body>
 </html>

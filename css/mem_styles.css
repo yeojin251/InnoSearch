@@ -26,18 +26,19 @@ body{ background:#fff; color:var(--text); }
 .auth-hero{
   background: var(--bg-hero);
   color:#fff;
-  padding: 50px 0;
+  padding: 40px 0;
   border-bottom: 1px solid #ffffff20;
+  text-align: center;
 }
 .auth-hero h1{ margin:0 0 6px; font-size: clamp(24px, 3.6vw, 34px); letter-spacing:-.2px; }
 .auth-hero .sub{ margin:0; color:#cbd5e1; }
 
 /* ===== 본문 카드 기본형 ===== */
-.auth-body{ background:#fff; padding:30px 0 60px; }
+.auth-body{ background:#fff; padding:20px 0 50px; }
 .auth-card{
   width:min(720px,100%);
   margin:0 auto;                /* 음수 마진 제거(통일) */
-  padding:30px 18px;
+  padding:20px 18px;
   background: var(--bg-hero);
   border:1px solid #ffffff26;
   border-radius:16px;
@@ -73,7 +74,7 @@ body{ background:#fff; color:var(--text); }
 /* 버튼 헬퍼 */
 .btn.full{ width:100%; height:44px; }
 .center{ text-align:center; }
-.small{ font-size:13px; }
+.small{ font-size:15px; }
 .link-strong{ color:#93c5fd; font-weight:600; }
 .muted{ color:#94a3b8; }
 
@@ -111,22 +112,39 @@ body{ background:#fff; color:var(--text); }
    공통 레이아웃 통일(로그인/회원가입 동일)
    ========================= */
 .auth-page{
-  --hero-pt: 56px;    /* 상단 배너 위 여백 */
-  --hero-pb: 20px;    /* 상단 배너 아래 여백 */
-  --body-pt: 24px;    /* 본문 상단 여백 */
-  --body-pb: 64px;    /* 본문 하단 여백 */
-  --card-max-login: 560px;
-  --card-max-sign:  720px;
+  --hero-max: 680px;              /* 👉 원하는 값(예: 640~720px)으로 조정 */
+  --hero-pt: 56px;                /* 위 여백 통일(이미 쓰는 변수) */
+  --hero-pb: 20px;                /* 아래 여백 통일 */
+  --body-pt: 24px;                /* 본문 위 여백 통일 */
+  --body-pb: 64px;                /* 본문 아래 여백 통일 */
 }
-.auth-page .auth-hero{ padding: var(--hero-pt) 0 var(--hero-pb); min-height:180px; }
-.auth-page .auth-body{ padding: var(--body-pt) 0 var(--body-pb); }
-.auth-page .auth-card{ margin:0 auto; }       /* 음수 마진 무효화 */
-.login-page  .auth-card{ max-width: var(--card-max-login); }
-.signup-page .auth-card{ max-width: var(--card-max-sign); }
 
-/* 타이틀 여백 통일 */
-.auth-hero h1{ margin:0 0 8px; line-height:1.1; }
-.auth-hero .sub{ margin:0; line-height:1.4; }
+.auth-hero .container{
+  width: min(var(--hero-max), 92%) !important;
+  margin: 0 auto;
+}
+.auth-page .auth-card{
+  max-width: var(--hero-max) !important;
+  margin: 0 auto;
+}
+
+/* 높이/여백도 두 페이지 동일 */
+.auth-page .auth-hero{
+  min-height: 180px;
+  padding: var(--hero-pt) 0 var(--hero-pb);
+  text-align: center;
+}
+.auth-page .auth-body{
+  padding: var(--body-pt) 0 var(--body-pb);
+}
+
+/* 제목/설명 여백 고정(문구 길이가 달라도 같은 위치감) */
+.auth-hero h1{ margin: 0 0 10px; line-height: 1.1; }
+.auth-hero .sub{ margin: 0; line-height: 1.5; opacity: .9; }
+
+/* 페이지별 카드 폭 차이를 없애려면 이전 설정 무효화 */
+.login-page  .auth-card,
+.signup-page .auth-card{ max-width: var(--hero-max) !important; }
 
 /* =========================
    AUTH 전용 상단 메뉴 정렬
@@ -140,4 +158,35 @@ body{ background:#fff; color:var(--text); }
 /* 헤더 그리드(로고 | 메뉴 | 액션) */
 .auth-page .site-header .nav{
   display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:24px;
+}
+
+/* =========================
+   메시지 스타일 (에러/성공)
+   ========================= */
+.message {
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.message.error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+}
+
+.message.success {
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  color: #86efac;
+}
+
+.message p {
+  margin: 0;
+}
+
+.message p:not(:last-child) {
+  margin-bottom: 4px;
 }
