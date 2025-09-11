@@ -1,0 +1,33 @@
+<!-- tech.html -->
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>InnoSearch</title>
+  <link rel="stylesheet" href="./css/styles.css"/>
+  <style>
+    .tech-detail-card{ background:#fff; padding:20px; border-radius:10px; box-shadow:0 4px 8px rgba(0,0,0,0.1); margin-bottom:20px; border-left:5px solid #007bff; }
+    .result-list{ list-style:none; padding-left:0; }
+    .result-list li{ padding:10px; border-bottom:1px solid #eee; cursor:pointer; }
+    .result-list li.active{ background:#e9f5ff; font-weight:bold; }
+  </style>
+</head>
+<body>
+  <header class="site-header"> ... </header>
+
+  <main class="section">
+    <div class="container">
+      <div id="tech-details-container"></div>
+      <h2>다른 기술 목록</h2>
+      <ul id="tech-list-container" class="result-list"></ul>
+    </div>
+  </main>
+
+  <footer class="site-footer"> ... </footer>
+
+  <script src="./js/apiClient.js"></script>
+  <script src="./js/session.js"></script>
+  <script src="./js/tech.js"></script>
+</body>
+</html>

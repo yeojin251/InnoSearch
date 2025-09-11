@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PDF 뷰어 (스크롤)</title>
+  <style>
+    body { margin: 0; background-color: #f0f0f0; font-family: sans-serif; }
+    .container { width:min(1100px, 92%); margin: 0 auto; }
+    #toolbar {
+      display:flex; flex-wrap: wrap; gap:8px; align-items:center;
+      padding:8px; border-radius:8px; margin-bottom:8px;
+      background-color:#fff; border:1px solid #e5e7eb; box-shadow:0 1px 3px rgba(0,0,0,.05);
+    }
+    #viewerContainer {
+      height:1300px; border:1px solid #e5e7eb; border-radius:12px;
+      overflow:auto; background-color:#e9e9e9; text-align:center;
+    }
+    #viewer { padding: 0; }
+    canvas { display:block; margin: 0 auto 16px; box-shadow: 0 2px 10px rgba(0,0,0,.1); background:#fff; }
+    #loadingWrapper { padding: 40px; text-align: center; color: #555; }
+    input[type="text"]{ height:36px; padding:0 10px; border:1px solid #d1d5db; border-radius:8px; width:220px; box-sizing: border-box; }
+    button, a.button { height:36px; padding:0 12px; border-radius:8px; border:1px solid #d1d5db; background:#fff; cursor:pointer; transition: background-color .2s; }
+    button:hover, a.button:hover { background-color:#f5f5f5; }
+    a.button { text-decoration:none; color:#333; display:inline-flex; align-items:center; box-sizing:border-box; margin-left:auto; }
+
+    /* 검색 히트 효과 */
+    .canvas-hit-flash {
+      outline: 4px solid #f59e0b;
+      transition: outline-color .9s ease;
+      animation: flashHit .9s ease 1;
+    }
+    @keyframes flashHit {
+      0% { outline-color: #f59e0b; }
+      100% { outline-color: transparent; }
+    }
+  </style>
+
+  <!-- pdf.js (모듈 버전) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.6.82/pdf.mjs" type="module"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.6.82/pdf.worker.mjs" type="module"></script>
+</head>
+<body>
+  <div class="container">
+    <div id="toolbar">
+      <button id="zoomOut">-</button>
+      <button id="zoomIn">+</button>
+      <input id="search" type="text" placeholder="문서 내 검색" />
+      <button id="find">찾기</button>
+      <a id="pdfLink" href="#" target="_blank" rel="noopener" class="button">새 창</a>
+    </div>
+
+    <div id="viewerContainer">
+      <div id="loadingWrapper">PDF 파일을 불러오는 중입니다...</div>
+      <div id="viewer"></div>
+    </div>
+  </div>
+
+  <script type="module">
+    document.addEventListener('DOMContentLoaded', function () {
+      // pdfjsLib 객체가 로드될 때까지 기다리는 함수
+      function waitForPdfJs() {
+        return new Promise(resolve => {
+          const itv = setInterval(() => {
+            if (window.pdfjsLib) {
+              clearInterval(itv);
+              resolve();
+            }
+          }, 50);
+        });
+      }
+
+      async function main() {
+        await waitForPdfJs();
+
+        const { pdfjsLib } = window;
+        pdfjsLib.GlobalWorkerOptions.workerSrc =
+          'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.6.82/pdf.worker.mjs';
+
+        const params = new URLSearchParams(window.location.search);
+        const url = params.get('file') || '/data/organization.pdf';
+        document.getElementById('pdfLink').href = url;
+
+        const CMAP_URL = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.6.82/cmaps/';
+
+        let pdfDoc = null;
+        let scale = 0.9;
+        const viewer = document.getElementById('viewer');
+        const viewerContainer = document.getElementById('viewerContainer');
+        const loadingWrapper = document.getElementById('loadingWrapper');
+
+        async function renderAllPages() {
+          if (!pdfDoc) return;
+          viewer.innerHTML = '';
+
+          const numPages = pdfDoc.numPages;
+          for (let num = 1; num <= numPages; num++) {
+            const page = await pdfDoc.getPage(num);
+            const viewport = page.getViewport({ scale });
+
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.height = viewport.height;
+            canvas.width  = viewport.width;
+
+            viewer.appendChild(canvas);
+            await page.render({ canvasContext: ctx, viewport }).promise;
+          }
+        }
+
+        async function init() {
+          try {
+            const loadingTask = pdfjsLib.getDocument({ url, cMapUrl: CMAP_URL, cMapPacked: true });
+            pdfDoc = await loadingTask.promise;
+            loadingWrapper.style.display = 'none';
+            await renderAllPages();
+          } catch (error) {
+            console.error('PDF 로딩 실패:', error);
+            loadingWrapper.textContent = 'PDF 파일을 불러올 수 없습니다. 파일 경로를 확인해주세요.';
+          }
+        }
+
+        // 확대/축소
+        document.getElementById('zoomIn').onclick  = () => { scale = Math.min(scale + 0.2, 3); renderAllPages(); };
+        document.getElementById('zoomOut').onclick = () => { scale = Math.max(scale - 0.2, 0.6); renderAllPages(); };
+
+        // ===== 검색: 해당 페이지로 내부 스크롤 이동 =====
+        const textCache = Object.create(null);
+
+        // container 안에서의 상대 top 계산
+        function getOffsetTopWithin(container, el) {
+          let top = 0, node = el;
+          while (node && node !== container) {
+            top += node.offsetTop;
+            node = node.offsetParent;
+          }
+          return top;
+        }
+
+        function jumpToPage(pageNumber) {
+          const canvas = viewer.querySelectorAll('canvas')[pageNumber - 1];
+          if (!canvas) return;
+
+          const targetY = getOffsetTopWithin(viewerContainer, canvas);
+          viewerContainer.scrollTo({ top: targetY, behavior: 'smooth' });
+
+          // 시각적 강조
+          canvas.classList.remove('canvas-hit-flash');
+          void canvas.offsetWidth; // reflow to restart animation
+          canvas.classList.add('canvas-hit-flash');
+        }
+
+        document.getElementById('find').onclick = async () => {
+          if (!pdfDoc) return;
+
+          const q = document.getElementById('search').value.trim();
+          if (!q) { alert('검색어를 입력하세요.'); return; }
+          const needle = q.toLowerCase();
+
+          // 안전망: 전체 렌더 보장
+          if (viewer.querySelectorAll('canvas').length !== pdfDoc.numPages) {
+            await renderAllPages();
+          }
+
+          for (let i = 1; i <= pdfDoc.numPages; i++) {
+            if (!textCache[i]) {
+              const page = await pdfDoc.getPage(i);
+              const tc = await page.getTextContent();
+              textCache[i] = tc.items.map(item => item.str).join(' ');
+            }
+            if (textCache[i].toLowerCase().includes(needle)) {
+              jumpToPage(i);
+              return;
+            }
+          }
+          alert('문서에 검색어가 없습니다.');
+        };
+
+        init();
+      }
+
+      main();
+    });
+  </script>
+</body>
+</html>

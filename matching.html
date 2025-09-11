@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>InnoSearch - 기술/분류 탐색</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/styles.css" />
+  <style>
+    .hero-wave {display: none;}
+    .hero-inner { min-height: 520px; grid-template-columns: 1fr; }
+    .search-panel { max-width: 1000px; margin: 0 auto; }
+    .tool-card { max-width:none; padding:22px; border-radius:18px; }
+
+    body {background: linear-gradient(180deg, #0e1330 0%, #0b1020 100%);
+    }
+
+    /* 👉 100% 가로폭 + 큰 높이 */
+    .tool-card {
+      margin-bottom:10px; width:150%; margin-left: -25%;
+    }
+
+    .hero-tool h3{
+      font-size:20px; font-weight:700; margin-bottom:14px; margin-left: -25%;
+    }
+
+    .tool-card .field input{
+      width:100%; height:64px; font-size:18px; border-radius:12px;
+    }
+    .tool-card .row-2{
+      display:grid; grid-template-columns: 1fr; gap:10px;
+    }
+    .tool-card select{
+      width:100%; height:64px; font-size:16px; border-radius:12px;
+      background:#0f1532; border:1px solid #2b365c; color:#e5e7eb; padding:0 12px;
+    }
+    @media (min-width: 800px){
+      .tool-card .row-2{ grid-template-columns: 2fr 1fr; }
+    }
+    .actions .btn{ height:56px; padding:0 18px; font-size:16px; border-radius:12px; }
+
+    .result-wrap{ margin-top: 18px; }
+    .result-list{ list-style:none; padding:0; margin:0; display:grid; gap:10px; }
+    .result-item{
+      background:#fff; color:#111827; border:1px solid #e5e7eb; border-radius:12px;
+      padding:14px 16px; cursor:pointer; display:flex; align-items:center; justify-content:space-between;
+      transition:.15s;
+    }
+    .result-item:hover{ transform: translateY(-1px); box-shadow: 0 6px 14px rgba(0,0,0,.08); }
+    .result-item .name{ font-weight:700; font-size:16px; }
+    .result-item .go{ color:#6366f1; font-weight:700; }
+
+    .empty, .loading{ color:#6b7280; background:#fff; border:1px dashed #e5e7eb; border-radius:12px; padding:16px; text-align:center; }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand" href="./home.html">
+        <span class="logo" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="24" height="24">
+            <path d="M12 2l8.66 5v10L12 22l-8.66-5V7z" fill="currentColor" opacity=".12" />
+            <path d="M12 6l6.06 3.5v7L12 20l-6.06-3.5v-7z" fill="currentColor" />
+          </svg>
+        </span>
+        <span class="brand-text">InnoSearch</span>
+      </a>
+      <nav class="menu" aria-label="주요 메뉴">
+        <a href="./matching.html">기술/분야</a>
+        <a href="./story.html">스토리</a>
+        <a href="./organ.html">창업시설</a>
+        <a href="./board.html">게시판</a>
+      </nav>
+      <div class="nav-actions">
+        <a class="link" id="btn-login" href="./login.html">로그인</a>
+        <a class="btn primary" id="btn-signup" href="./signup.html">회원가입</a>
+        <a class="link" id="btn-mypage" href="./myLab.html" style="display:none;">마이페이지</a>
+        <a class="link" id="btn-logout" href="#" style="display:none;">로그아웃</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container hero-inner">
+        <div class="search-panel">
+          <div class="hero-tool">
+            <h3 style="font-size:22px">기술/분류 검색</h3>
+            <div class="tool-card">
+              <div class="row-2">
+                <div class="field">
+                  <label class="sr-only" for="q">기술명/키워드</label>
+                  <input id="q" type="text" placeholder="기술명 또는 키워드 입력 (예: 반도체, 친환경, 로봇)" />
+                </div>
+                <div class="field">
+                  <label for="techSubCategory" class="sr-only">12대 국가전략기술 (소분류)</label>
+                  <select id="techSubCategory">
+                    <option value="">소분류 전체</option>
+                    <option value="1. 첨단바이오">첨단바이오</option>
+                    <option value="2. 우주항공·해양">우주항공·해양</option>
+                    <option value="3. 수소">수소</option>
+                    <option value="4. 사이버 보안">사이버 보안</option>
+                    <option value="5. 첨단 모빌리티">첨단 모빌리티</option>
+                    <option value="6. 이차전지">이차전지</option>
+                    <option value="7. 반도체·디스플레이">반도체·디스플레이</option>
+                    <option value="8. 인공지능">인공지능</option>
+                    <option value="9. 첨단로봇·제조">첨단로봇·제조</option>
+                    <option value="10. 차세대 통신">차세대 통신</option>
+                    <option value="11. 양자">양자</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="actions">
+                <button class="btn primary" id="matchBtn">검색</button>
+              </div>
+
+              <div id="matchingResults" class="result-wrap"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <svg class="hero-wave wave-up" viewBox="0 0 1440 160" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0,64 C180,128 360,0 540,26.7 C720,53.3 900,160 1080,144 C1260,128 1350,96 1440,80 L1440,160 L0,160 Z"/>
+      </svg>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container foot">
+      <div class="brand lite">
+        <span class="logo" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="24" height="24">
+            <path d="M12 2l8.66 5v10L12 22l-8.66-5V7z" fill="currentColor" opacity=".12" />
+            <path d="M12 6l6.06 3.5v7L12 20l-6.06-3.5v-7z" fill="currentColor" />
+          </svg>
+        </span>
+        <span class="brand-text">InnoSearch</span>
+      </div>
+      <div class="foot-right">
+        <a href="#">이용약관</a>
+        <a href="#">개인정보처리방침</a>
+        <a href="#">고객센터</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="./js/apiClient.js"></script>
+  <script src="./js/session.js"></script>
+  <script src="./js/matching-page.js"></script>
+</body>
+</html>

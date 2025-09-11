@@ -1,0 +1,44 @@
+/* 본문 검정 + 카드 톤 */
+.detail-card{
+  background:#fff; color:#111827;
+  border:1px solid #e5e7eb; border-radius:16px; padding:20px;
+  box-shadow: 0 10px 30px rgba(2,6,23,.08);
+}
+.detail-head .pill{
+  display:inline-block; padding:6px 10px; border-radius:999px;
+  background:#eef2ff; color:#3730a3; font-weight:700; font-size:12px; border:1px solid #c7d2fe;
+}
+.detail-head h1{ margin:8px 0 4px; font-size:24px; }
+.muted{ color:#6b7280; }
+
+.detail-grid{
+  display:grid; gap:14px; grid-template-columns: 1fr;
+  margin-top: 12px;
+}
+@media(min-width:900px){ .detail-grid{ grid-template-columns: 1fr 1fr; } }
+.box{
+  background:#ffffff; border:1px solid #e5e7eb; border-radius:12px; padding:14px;
+}
+.box h3{ margin:0 0 8px; font-size:16px; color:#111827; }
+.box p{ margin:0; }
+
+.event-list{ margin:0; padding-left:18px; }
+.event-list li{ margin:4px 0; }
+.backbar{ margin-top:14px; }
+
+/* CSV 전체 필드: key-value 그리드 */
+.kv-grid{
+  display:grid; grid-template-columns: 220px 1fr;
+  gap:8px 14px;
+}
+.kv-grid .key{
+  color:#374151; font-weight:600; background:#f9fafb; border:1px solid #e5e7eb;
+  border-radius:8px; padding:8px 10px;
+}
+.kv-grid .val{
+  color:#111827; background:#fff; border:1px solid #e5e7eb;
+  border-radius:8px; padding:8px 10px; overflow-wrap:anywhere;
+}
+@media (max-width:640px){
+  .kv-grid{ grid-template-columns: 1fr; }
+}

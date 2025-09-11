@@ -3,86 +3,88 @@ document.addEventListener('DOMContentLoaded', () => {
   const input = document.getElementById('q');
   const btn = document.getElementById('matchBtn');
   const box = document.getElementById('matchingResults');
-
   const API_BASE = '/api/matching';
+  const isDetailedSearchPage = !!document.getElementById('techSubCategory');
 
-  function htmlEscape(s) {
-    return String(s)
-      .replaceAll('&', '&amp;')
-      .replaceAll('<', '&lt;')
-      .replaceAll('>', '&gt;')
-      .replaceAll('"', '&quot;')
-      .replaceAll("'", '&#39;');
-  }
+  const esc = (s)=> String(s)
+    .replaceAll('&','&amp;').replaceAll('<','&lt;')
+    .replaceAll('>','&gt;').replaceAll('"','&quot;')
+    .replaceAll("'","&#39;");
 
-  function render(data) {
-    if (!box) return;
-    box.innerHTML = '';
+  // ========== 홈: 빠른 매칭 ==========
+  function initQuick() {
+    function render(data) {
+      if (!box) return;
+      box.innerHTML = '';
+      box.style.marginTop='12px'; box.style.borderTop='1px solid #eee'; box.style.paddingTop='12px';
 
-    // 컨테이너 기본 스타일(필요하면 CSS로 옮겨도 됨)
-    box.style.marginTop = '12px';
-    box.style.borderTop = '1px solid #eee';
-    box.style.paddingTop = '12px';
+      if (!data?.success) { box.innerHTML = `<p class="empty">검색 오류: ${esc(data?.message||'')}</p>`; return; }
+      const { keyword, totalCount, results } = data;
 
-    if (!data || data.success === false) {
-      box.innerHTML = `<p class="empty">검색 중 오류가 발생했어요. ${data?.message ? htmlEscape(data.message) : ''}</p>`;
-      return;
-    }
+      box.insertAdjacentHTML('beforeend',
+        `<div class="results-head"><strong>"${esc(keyword)}"</strong> 검색 결과 <b>${totalCount}</b>건</div>`);
 
-    const { keyword, totalCount, results } = data;
+      if (!totalCount) { box.insertAdjacentHTML('beforeend','<p class="empty">일치하는 결과가 없습니다.</p>'); return; }
 
-    const head = document.createElement('div');
-    head.className = 'results-head';
-    head.style.marginBottom = '8px';
-    head.innerHTML = `<strong>"${htmlEscape(keyword)}"</strong> 검색 결과 <b>${totalCount}</b>건`;
-    box.appendChild(head);
-
-    if (!totalCount) {
-      box.insertAdjacentHTML('beforeend', '<p class="empty">일치하는 결과가 없습니다.</p>');
-      return;
-    }
-
-    const ul = document.createElement('ul');
-    ul.className = 'result-list';
-    ul.style.listStyle = 'disc';
-    ul.style.paddingLeft = '20px';
-    ul.style.lineHeight = '1.7';
-
-    results.forEach((name) => {
-      const li = document.createElement('li');
-      li.textContent = name; // 기술명 그대로 표시
-      ul.appendChild(li);
-    });
-
-    box.appendChild(ul);
-  }
-
-  async function search() {
-    const keyword = (input.value || '').trim();
-    if (!keyword) {
-      render({ success: true, keyword: '', totalCount: 0, results: [] });
-      return;
-    }
-
-    box.innerHTML = '<p class="loading">검색 중…</p>';
-
-    try {
-      const resp = await fetch(`${API_BASE}/search`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ keyword }),
+      const ul = document.createElement('ul');
+      ul.className = 'result-list';
+      ul.style.cssText = 'list-style: disc; padding-left: 20px; line-height: 1.7;';
+      results.forEach(name => {
+        const li = document.createElement('li');
+        li.textContent = name;
+        ul.appendChild(li);
       });
-      const data = await resp.json();
-      render(data);
-    } catch (err) {
-      render({ success: false, message: err.message || '네트워크 오류' });
+      box.appendChild(ul);
     }
+
+    async function search() {
+      const keyword = (input.value||'').trim();
+      if (!keyword) { box.innerHTML=''; return; }
+      box.innerHTML = '<p class="loading">검색 중…</p>';
+      try{
+        const resp = await fetch(`${API_BASE}/quick-search`, {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ keyword })
+        });
+        render(await resp.json());
+      }catch{ render({success:false, message:'네트워크 오류'})}
+    }
+
+    btn?.addEventListener('click', search);
+    input?.addEventListener('keydown', e => { if (e.key==='Enter') search(); });
   }
 
-  // 이벤트 바인딩
-  btn?.addEventListener('click', search);
-  input?.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') search();
-  });
+  // ========== 기술/분야: 상세 검색 ==========
+  function initDetailed() {
+    const select = document.getElementById('techSubCategory');
+
+    async function search() {
+      const keyword = (input.value||'').trim();
+      const techSubCategory = select.value;
+
+      if (!keyword && !techSubCategory) { window.location.href = './tech.html'; return; }
+
+      if (box) box.innerHTML = '<p class="loading">검색 중…</p>';
+      try{
+        const resp = await fetch(`${API_BASE}/search`, {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ keyword, techSubCategory })
+        });
+        const data = await resp.json();
+        if (!data.success) { alert('검색 실패: '+data.message); if (box) box.innerHTML=''; return; }
+        localStorage.setItem('allTechData', JSON.stringify(data.results));
+        localStorage.setItem('searchKeyword', keyword);
+        localStorage.setItem('searchSubCategory', techSubCategory);
+        window.location.href = './tech.html';
+      }catch{
+        alert('네트워크 오류');
+        if (box) box.innerHTML='';
+      }
+    }
+
+    btn?.addEventListener('click', search);
+    input?.addEventListener('keydown', e => { if (e.key==='Enter'){ e.preventDefault(); search(); }});
+  }
+
+  if (isDetailedSearchPage) initDetailed(); else initQuick();
 });

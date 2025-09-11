@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>InnoSearch - 기술 상세</title>
+  <link rel="stylesheet" href="./css/styles.css" />
+  <style>
+    body{ background:linear-gradient(180deg, #0e1330 0%, #0b1020 100%); }
+    .section{ padding: 32px 0; }
+    .container{ width:min(1100px,92%); margin:0 auto; }
+    .card{
+      background:#fff; border:1px solid #e5e7eb; border-radius:16px; padding:20px;
+      box-shadow: 0 6px 16px rgba(0,0,0,.06); color:#111827;
+    }
+    h1{ margin:0 0 8px; font-size:24px; color:#111827; }
+    .meta{ color:#6b7280; margin-bottom:16px; }
+    table{ width:100%; border-collapse:collapse; }
+    th, td{ text-align:left; border-bottom:1px solid #f1f5f9; padding:10px 8px; color:#111827; }
+    th{ width:280px; color:#374151; font-weight:700; background:#f9fafb; }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand" href="./home.html">
+        <span class="logo" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="24" height="24">
+            <path d="M12 2l8.66 5v10L12 22l-8.66-5V7z" fill="currentColor" opacity=".12"/>
+            <path d="M12 6l6.06 3.5v7L12 20l-6.06-3.5v-7z" fill="currentColor"/>
+          </svg>
+        </span>
+        <span class="brand-text">InnoSearch</span>
+      </a>
+
+      <nav class="menu" aria-label="주요 메뉴">
+        <a href="./matching.html">기술/분야</a>
+        <a href="./story.html">스토리</a>
+        <a href="./organ.html">창업시설</a>
+        <a href="./board.html">게시판</a>
+      </nav>
+
+      <!-- 로그인/회원가입/마이페이지/로그아웃 -->
+      <div class="nav-actions">
+        <a class="link" id="btn-login"  href="./login.html">로그인</a>
+        <a class="btn primary" id="btn-signup" href="./signup.html">회원가입</a>
+        <a class="link" id="btn-mypage" href="./myLab.html" style="display:none;">마이페이지</a>
+        <a class="link" id="btn-logout" href="#" style="display:none;">로그아웃</a>
+        <span id="user-display" style="display:none; margin-right:10px; color:#cbd5e1;"></span>
+      </div>
+    </div>
+  </header>
+
+  <main class="section">
+    <div class="container">
+      <div class="card">
+        <h1 id="techName">기술명</h1>
+        <div class="meta" id="techMeta">데이터 소스: -</div>
+        <div class="table-wrap">
+          <table id="detailTable">
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container foot">
+      <div class="brand lite">
+        <span class="logo" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="24" height="24">
+            <path d="M12 2l8.66 5v10L12 22l-8.66-5V7z" fill="currentColor" opacity=".12" />
+            <path d="M12 6l6.06 3.5v7L12 20l-6.06-3.5v-7z" fill="currentColor" />
+          </svg>
+        </span>
+        <span class="brand-text">InnoSearch</span>
+      </div>
+      <div class="foot-right">
+        <a href="#">이용약관</a>
+        <a href="#">개인정보처리방침</a>
+        <a href="#">고객센터</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 세션 토글용 공통 스크립트 -->
+  <script src="./js/apiClient.js"></script>
+  <script src="./js/session.js"></script>
+
+  <script>
+    const esc = s => String(s ?? '')
+      .replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')
+      .replaceAll('"','&quot;').replaceAll("'",'&#39;');
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // localStorage 에 저장된 전체 레코드로 상세 출력
+      const dataRaw = localStorage.getItem('selectedTechFull');
+      if (!dataRaw) {
+        document.getElementById('techName').textContent = '선택된 기술이 없습니다.';
+        document.getElementById('techMeta').textContent  = '';
+        return;
+      }
+
+      const data = JSON.parse(dataRaw);
+      document.getElementById('techName').textContent = data.name || '기술 상세';
+      document.getElementById('techMeta').textContent = `데이터 소스: ${data.source || '-'}`;
+
+      const tbody = document.querySelector('#detailTable tbody');
+      tbody.innerHTML = '';
+      const fields = data.fields || {};
+
+      Object.entries(fields).forEach(([key, val]) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<th>${esc(key)}</th><td>${esc(val ?? '')}</td>`;
+        tbody.appendChild(tr);
+      });
+    });
+  </script>
+</body>
+</html>

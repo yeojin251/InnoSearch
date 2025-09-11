@@ -80,6 +80,10 @@ app.get('/post-detail.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'post-detail.html'));
 });
 
+app.get('/tech-detail.html', (req,res)=>{
+  res.sendFile(path.join(__dirname, 'tech-detail.html'));
+});
+
 // ===== 서버 시작 =====
 async function startServer() {
   try {

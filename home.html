@@ -11,6 +11,7 @@
 </head>
 
 <body>
+  <!-- 헤더 -->
   <header class="site-header">
     <div class="container nav">
       <a class="brand" href="./home.html">
@@ -24,40 +25,37 @@
       </a>
 
       <nav class="menu" aria-label="주요 메뉴">
-        <a href="./matching.html">매칭</a>
+        <a href="./matching.html">기술/분야</a>
         <a href="./story.html">스토리</a>
-        <a href="./tech.html">유망기술</a>
+        <a href="./organ.html">창업시설</a>
         <a href="./board.html">게시판</a>
       </nav>
 
       <div class="nav-actions">
         <a class="link" id="btn-login" href="./login.html">로그인</a>
         <a class="btn primary" id="btn-signup" href="./signup.html">회원가입</a>
-        <a class="link" id="btn-mypage" href="./myLab.html" style="display: none;">마이페이지</a>
-        <a class="link" id="btn-logout" href="#" style="display: none;">로그아웃</a>
-        <span id="user-display" style="display: none; margin-right: 10px; color: #666;"></span>
+        <a class="link" id="btn-mypage" href="./myLab.html" style="display:none;">마이페이지</a>
+        <a class="link" id="btn-logout" href="#" style="display:none;">로그아웃</a>
+        <span id="user-display" style="display:none; margin-right:10px; color:#666;"></span>
       </div>
     </div>
   </header>
 
   <main>
+    <!-- 히어로: 홈 빠른 매칭 (기술명만) -->
     <section class="hero">
       <div class="container hero-inner">
         <div class="hero-copy">
           <div class="hero-tool">
-            <h3>빠른 매칭</h3>
-
+            <h3>유망기술 탐색</h3>
             <div class="tool-card">
               <div class="field">
-                <label class="sr-only" for="q">문제/키워드</label>
-                <input id="q" type="text" placeholder="키워드 입력 (예: 친환경)" />
+                <label class="sr-only" for="q">기술명/키워드</label>
+                <input id="q" type="text" placeholder="기술명 또는 키워드 입력 (예: 친환경)" />
               </div>
-
-
               <div class="actions">
-                <button class="btn primary" id="matchBtn">매칭 보기</button>
+                <button class="btn primary" id="matchBtn">탐색하기</button>
               </div>
-
               <div id="matchingResults"></div>
             </div>
           </div>
@@ -75,20 +73,19 @@
       </svg>
     </section>
 
+    <!-- 최신 리포트 -->
     <section id="updates" class="section">
       <div class="container section-head">
         <h2>최신 리포트</h2>
       </div>
-
-      <div class="container cards" id="report-cards-container">
-        </div>
+      <div class="container cards" id="report-cards-container"></div>
     </section>
 
+    <!-- 최신 트렌드 -->
     <section class="section tags">
       <div class="container section-head">
         <h2>최신 트렌드</h2>
       </div>
-
       <div class="container tag-list" role="list">
         <a href="#" class="tag" role="listitem">팝업스토어</a>
         <a href="#" class="tag" role="listitem">MZ세대</a>
@@ -107,6 +104,7 @@
     </section>
   </main>
 
+  <!-- 푸터 -->
   <footer class="site-footer">
     <div class="container foot">
       <div class="brand lite">
@@ -126,6 +124,7 @@
     </div>
   </footer>
 
+  <!-- 스크립트 -->
   <script src="./js/apiClient.js"></script>
   <script src="./js/session.js"></script>
   <script src="./js/matching.js"></script>
