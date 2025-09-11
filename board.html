@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>게시판 – InnoSearch</title>
+  <link rel="stylesheet" href="./css/styles.css" />
+  <link rel="stylesheet" href="./css/board_styles.css" />
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand" href="./home.html">
+        <span class="logo" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="24" height="24"><path d="M12 2l8.66 5v10L12 22l-8.66-5V7z" fill="currentColor" opacity=".12" /><path d="M12 6l6.06 3.5v7L12 20l-6.06-3.5v-7z" fill="currentColor" /></svg>
+        </span>
+        <span class="brand-text">InnoSearch</span>
+      </a>
+      <nav class="menu" aria-label="주요 메뉴">
+        <a href="./matching.html">매칭</a>
+        <a href="./story.html">스토리</a>
+        <a href="./tech.html">유망기술</a>
+        <a href="./board.html">게시판</a>
+      </nav>
+      <div class="nav-actions">
+        <a class="link" id="btn-login" href="./login.html">로그인</a>
+        <a class="btn primary" id="btn-signup" href="./signup.html">회원가입</a>
+        <a class="link" id="btn-mypage" href="./myLab.html" style="display: none;">마이페이지</a>
+        <a class="link" id="btn-logout" href="#" style="display: none;">로그아웃</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="board-main">
+    <div class="container">
+      <div class="board-header">
+        <h1>게시판</h1>
+        <p>자유롭게 글을 작성하고 댓글로 소통하며 함께 프로젝트 할 사람을 찾아보세요.</p>
+      </div>
+
+      <div class="board-container">
+        <div class="board-table-wrapper">
+          <table class="board-table">
+            <thead>
+              <tr>
+                <th class="col-no">No</th>
+                <th class="col-title">제목</th>
+                <th class="col-author">글쓴이</th>
+                <th class="col-date">작성시간</th>
+              </tr>
+            </thead>
+            <tbody id="post-list">
+              </tbody>
+          </table>
+        </div>
+
+        <div class="board-footer">
+          <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Search">
+            <button id="searchBtn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+              </svg>
+            </button>
+          </div>
+          <button id="newPostBtn" class="btn primary">글쓰기</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    </footer>
+
+  <script src="./js/apiClient.js"></script>
+  <script src="./js/session.js"></script>
+  <script src="./js/board.js"></script>
+</body>
+</html>

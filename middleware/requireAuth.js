@@ -1,25 +1,35 @@
-// 인증이 필요한 페이지 접근 시 사용하는 미들웨어
+// middleware/requireAuth.js
+// 인증 미들웨어 (페이지/API 분리)
 
-function requireAuth(req, res, next) {
-  if (!req.session.userId) {
-    // 로그인하지 않은 사용자는 로그인 페이지로 리다이렉트
-    return res.redirect('/login');
-  }
-  next();
+// API 호출 여부 판별
+function isApiRequest(req) {
+  return (
+    (req.originalUrl && req.originalUrl.startsWith('/api/')) ||
+    (req.get('accept') || '').includes('application/json') ||
+    req.xhr === true
+  );
 }
 
-// API 요청에 대한 인증 미들웨어
-function requireAuthAPI(req, res, next) {
-  if (!req.session.userId) {
-    return res.status(401).json({
-      success: false,
-      message: '로그인이 필요합니다.'
-    });
+// 페이지용: 미로그인 시 로그인 페이지로 리다이렉트
+// (단, fetch 등으로 페이지 라우트를 JSON으로 요청하면 401 JSON 반환)
+function requireAuthPage(req, res, next) {
+  if (req.session && req.session.userId) return next();
+
+  if (isApiRequest(req)) {
+    return res.status(401).json({ success: false, message: '로그인이 필요합니다.' });
   }
-  next();
+  // 로그인 페이지 경로는 프로젝트 라우트에 맞춰 선택하세요.
+  // app.get('/login', ...)이면 '/login' 유지, 정적 파일이면 '/login.html'로 변경
+  return res.redirect('/login');
+}
+
+// API용: 항상 JSON으로 401 반환
+function requireAuthAPI(req, res, next) {
+  if (req.session && req.session.userId) return next();
+  return res.status(401).json({ success: false, message: '로그인이 필요합니다.' });
 }
 
 module.exports = {
-  requireAuth,
-  requireAuthAPI
+  requireAuthPage,
+  requireAuthAPI,
 };

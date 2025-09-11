@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>새 글 작성 – InnoSearch</title>
+  <link rel="stylesheet" href="./css/styles.css" />
+  <link rel="stylesheet" href="./css/board_styles.css" />
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand" href="./home.html">
+        <span class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24"><path d="M12 2l8.66 5v10L12 22l-8.66-5V7z" fill="currentColor" opacity=".12" /><path d="M12 6l6.06 3.5v7L12 20l-6.06-3.5v-7z" fill="currentColor" /></svg></span>
+        <span class="brand-text">InnoSearch</span>
+      </a>
+      <nav class="menu" aria-label="주요 메뉴">
+        <a href="./matching.html">매칭</a>
+        <a href="./story.html">스토리</a>
+        <a href="./tech.html">유망기술</a>
+        <a href="./board.html">게시판</a>
+      </nav>
+      <div class="nav-actions">
+        <a class="link" id="btn-login" href="./login.html">로그인</a>
+        <a class="btn primary" id="btn-signup" href="./signup.html">회원가입</a>
+        <a class="link" id="btn-mypage" href="./myLab.html" style="display: none;">마이페이지</a>
+        <a class="link" id="btn-logout" href="#" style="display: none;">로그아웃</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="board-main">
+    <div class="container">
+      <div class="board-header">
+        <h1>새 글 작성</h1>
+      </div>
+
+      <div class="board-container">
+        <form id="newPostForm">
+          <div class="form-group">
+            <label for="postTitle">제목</label>
+            <input type="text" id="postTitle" required>
+          </div>
+          <div class="form-group">
+            <label for="postContent">내용</label>
+            <textarea id="postContent" rows="10" required></textarea>
+          </div>
+          <div class="form-actions">
+            <button type="button" id="cancelBtn" class="btn">취소</button>
+            <button type="submit" class="btn primary">등록</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container foot">
+      <div class="brand lite">
+        <span class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24"><path d="M12 2l8.66 5v10L12 22l-8.66-5V7z" fill="currentColor" opacity=".12" /><path d="M12 6l6.06 3.5v7L12 20l-6.06-3.5v-7z" fill="currentColor" /></svg></span>
+        <span class="brand-text">InnoSearch</span>
+      </div>
+      <div class="foot-right">
+        <a href="#">이용약관</a><a href="#">개인정보처리방침</a><a href="#">고객센터</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="./js/apiClient.js"></script>
+  <script src="./js/session.js"></script>
+  <script src="./js/new-post.js"></script>
+</body>
+</html>

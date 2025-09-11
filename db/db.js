@@ -34,6 +34,31 @@ async function initDatabase() {
     `;
     
     database.exec(createUsersTable);
+
+        const createPostsTable = `
+      CREATE TABLE IF NOT EXISTS posts (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        title TEXT NOT NULL,
+        content TEXT NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `;
+    const createCommentsTable = `
+      CREATE TABLE IF NOT EXISTS comments (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        post_id INTEGER NOT NULL,
+        user_id INTEGER NOT NULL,
+        content TEXT NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `;
+    database.exec(createPostsTable);
+    database.exec(createCommentsTable);
     
     // 인덱스 생성
     const createIndexes = `
@@ -109,9 +134,62 @@ function closeDatabase() {
   }
 }
 
+// 게시판 관련 쿼리
+const boardQueries = {
+  // 새 게시글 생성
+  createPost: (title, content, userId) => {
+    const db = getDatabase();
+    const stmt = db.prepare('INSERT INTO posts (title, content, user_id) VALUES (?, ?, ?)');
+    return stmt.run(title, content, userId);
+  },
+
+  // 모든 게시글 목록 조회 (최신순)
+  getAllPosts: () => {
+    const db = getDatabase();
+    // 익명성을 위해 사용자 이름은 '익명'으로 고정하고, id와 작성일시만 가져옵니다.
+    const stmt = db.prepare(`
+      SELECT p.id, p.title, '익명' as author, p.created_at
+      FROM posts p
+      ORDER BY p.id DESC
+    `);
+    return stmt.all();
+  },
+
+  // ID로 특정 게시글 조회
+  findPostById: (id) => {
+    const db = getDatabase();
+    const stmt = db.prepare(`
+      SELECT p.id, p.title, p.content, '익명' as author, p.created_at, p.user_id
+      FROM posts p
+      WHERE p.id = ?
+    `);
+    return stmt.get(id);
+  },
+
+  // 특정 게시글의 댓글 목록 조회
+  getCommentsByPostId: (postId) => {
+    const db = getDatabase();
+    const stmt = db.prepare(`
+      SELECT c.id, c.content, '익명' as author, c.created_at, c.user_id
+      FROM comments c
+      WHERE c.post_id = ?
+      ORDER BY c.created_at ASC
+    `);
+    return stmt.all(postId);
+  },
+
+  // 새 댓글 추가
+  createComment: (postId, userId, content) => {
+    const db = getDatabase();
+    const stmt = db.prepare('INSERT INTO comments (post_id, user_id, content) VALUES (?, ?, ?)');
+    return stmt.run(postId, userId, content);
+  },
+}
+
 module.exports = {
   getDatabase,
   initDatabase,
   userQueries,
+  boardQueries,
   closeDatabase
 };

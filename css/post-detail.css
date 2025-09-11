@@ -1,0 +1,72 @@
+/* css/post-detail.css */
+#post-container {
+    background: #fff;
+    padding: 24px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    margin-bottom: 24px;
+}
+
+#post-header {
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 16px;
+    margin-bottom: 24px;
+}
+#post-header h1 { margin: 0; font-size: 28px; color: #000000; }
+#post-meta { font-size: 14px; color: #000000; margin-top: 8px; }
+
+#post-content {
+    min-height: 200px;
+    line-height: 1.7;
+    color: #000000;
+}
+
+#comments-section {
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+}
+#comments-section h4 { margin: 0 0 16px; font-size: 18px; color: #000000; }
+
+.comment-item {
+    padding: 12px 0;
+    border-bottom: 1px solid #f1f5f9;
+}
+.comment-item:last-child { border-bottom: none; }
+.comment-meta { font-size: 14px; margin-bottom: 6px; }
+.comment-author { font-weight: 600; }
+.comment-date { color: #9ca3af; margin-left: 8px; }
+.comment-content { color: #000000; }
+
+#comment-form { margin-top: 20px;}
+#comment-form textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 13px;
+}
+
+#comment-list { color:#000000 }
+
+#comment-form .form-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+#comment-form button {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: none;
+    background: linear-gradient(90deg, var(--primary), var(--primary-2));
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+}
+#comment-form button:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+}

@@ -1,0 +1,132 @@
+/* css/board_styles.css */
+body {
+    background-color: #0e1330;
+    color: #e5e7eb;
+}
+
+.board-main {
+    padding: 40px 0;
+}
+
+.board-header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.board-header h1 {
+    font-size: 32px;
+    font-weight: 800;
+    margin-bottom: 8px;
+    color: #ffffff;
+}
+
+.board-header p {
+    font-size: 16px;
+    color: #ffffffc8;
+}
+
+.board-container {
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.board-table-wrapper {
+    overflow-x: auto;
+}
+
+.board-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px;
+}
+
+.board-table th, .board-table td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.board-table thead th {
+    font-size: 14px;
+    font-weight: 600;
+    color: #4b5563;
+    background-color: #f9fafb;
+}
+
+.board-table tbody tr {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.board-table tbody tr:hover {
+    background-color: #f9fafb;
+}
+
+.board-table td {
+    font-size: 15px;
+    color: #374151;
+}
+
+.col-no { width: 10%; }
+.col-title { width: 55%; }
+.col-author { width: 15%; text-align: center; }
+.col-date { width: 20%; text-align: center; }
+
+.board-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 24px;
+}
+
+.search-box {
+    position: relative;
+}
+
+.search-box input {
+    height: 38px;
+    width: 240px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 0 12px 0 36px;
+}
+
+.search-box button {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    color: #9ca3af;
+    cursor: pointer;
+}
+
+/* css/board_styles.css 에 추가 */
+.form-group {
+    margin-bottom: 20px;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #374151; /* 라벨 색상도 어둡게 변경 */
+}
+.form-group input, .form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #0e1330; /* 테두리 색상 수정 */
+    border-radius: 8px;
+    font-size: 16px;
+    color: #1f2937; /* 글자 색상을 어둡게 변경 */
+    background-color: #ffffff; /* 배경색을 흰색으로 명시 */
+}
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+}

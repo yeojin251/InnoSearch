@@ -3,7 +3,7 @@
 class SessionManager {
   constructor() {
     this.currentUser = null;
-    this.init();
+    this.initPromise = this.init();
   }
 
   // 초기화
@@ -88,8 +88,9 @@ class SessionManager {
 // 전역 세션 매니저 인스턴스
 window.sessionManager = new SessionManager();
 
-// 로그아웃 버튼 이벤트 리스너
-document.addEventListener('DOMContentLoaded', () => {
+// 로그아웃 버튼 이벤트 리스너 (DOM 로드 후, 세션 초기화를 기다렸다가 연결)
+document.addEventListener('DOMContentLoaded', async () => {
+  await window.sessionManager.initPromise; // 세션 초기화 완료까지 대기
   const logoutBtn = document.getElementById('btn-logout');
   if (logoutBtn) {
     logoutBtn.addEventListener('click', (e) => {

@@ -26,7 +26,7 @@ body{ background:#fff; color:var(--text); }
 .auth-hero{
   background: var(--bg-hero);
   color:#fff;
-  padding: 40px 0;
+  padding: 60px 0;
   border-bottom: 1px solid #ffffff20;
   text-align: center;
 }
@@ -98,7 +98,7 @@ body{ background:#fff; color:var(--text); }
 .auth-page .site-footer{ margin-top:auto; }
 
 /* 히어로/본문을 투명으로 만들어 그라데이션 연결 */
-.auth-page .auth-hero{ background:transparent; padding:48px 0 12px; border-bottom:none; }
+.auth-page .auth-hero{ background:transparent; padding:60px 0 12px; border-bottom:none; }
 .auth-page .auth-body{ background:transparent; padding:12px 0 56px; position:relative; z-index:0; }
 
 /* auth 전용 카드 톤 */

@@ -3,16 +3,19 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>¸¶ÀÌÆäÀÌÁö ¡¤ InnoSearch</title>
+  <title>ë§ˆì´í˜ì´ì§€ Â· InnoSearch</title>
 
-  <!-- »çÀÌÆ® °øÅë / ¸â¹ö Àü¿ë Å×¸¶ -->
+  <!-- Pretendard: ê³µì‹ CDN (êµ¬ê¸€í°íŠ¸ ì•„ë‹˜) -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
+
+  <!-- ì‚¬ì´íŠ¸ ê³µí†µ ìŠ¤íƒ€ì¼ -->
   <link rel="stylesheet" href="./css/styles.css" />
   <link rel="stylesheet" href="./css/mem_styles.css" />
 
   <style>
-    /* ===== ¸¶ÀÌÆäÀÌÁö Àü¿ë º¸Á¶ ½ºÅ¸ÀÏ ===== */
+    /* ===== ë§ˆì´í˜ì´ì§€ ì „ìš© ë¹ ë¥¸ ìŠ¤íƒ€ì¼ ===== */
 
-    /* ·Î±×ÀÎ/È¸¿ø°¡ÀÔ°ú µ¿ÀÏÇÏ°Ô: Áß¾Ó Á¤·Ä È÷¾î·Î */
     .mp-hero{ text-align:center; }
     .mp-hero .container{
       width: min(1100px, 92%);
@@ -26,7 +29,7 @@
     }
     .mp-hero .sub{ margin:0; }
 
-    /* °³¿ä Ä«µå (Áß¾Ó, mem_styles Åæ) */
+    /* ê°œìš” ì¹´ë“œ (mem_styles í†¤ê³¼ ì¼ì¹˜) */
     .overview-card{
       width: min(1100px, 92%);
       margin: 0 auto;
@@ -50,7 +53,6 @@
     .ov-main h1{ margin:2px 0 4px; font-size: clamp(20px, 2.6vw, 26px); }
     .mini{ color:#cbd5e1; font-size:13px; }
 
-    /* ¿ä¾à Åë°è */
     .quick-stats{
       display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; margin-top: 12px;
     }
@@ -71,7 +73,7 @@
       .quick-stats{ grid-template-columns: 1fr 1fr; }
     }
 
-    /* footer Ç×»ó ÇÏ´Ü (auth-page¿Í ÇÔ²² µ¿ÀÛ) */
+    /* footer ê³ ì • (auth-pageì™€ í•¨ê»˜ ë™ì‘) */
     .auth-page{ min-height:100vh; display:flex; flex-direction:column; }
     .auth-page main{ flex:1 0 auto; }
     .auth-page .site-footer{ margin-top:auto; }
@@ -79,10 +81,10 @@
 </head>
 
 <body class="auth-page">
-  <!-- »ó´Ü °øÅë ³×ºñ -->
+  <!-- ìƒë‹¨ ê³ ì • ë„¤ë¹„ê²Œì´ì…˜ -->
   <header class="site-header">
     <div class="container nav">
-      <a class="brand" href="./home.html" aria-label="È¨À¸·Î">
+      <a class="brand" href="./home.html" aria-label="í™ˆìœ¼ë¡œ">
         <span class="logo" aria-hidden="true">
           <svg viewBox="0 0 24 24" width="24" height="24">
             <path d="M12 2l8.66 5v10L12 22l-8.66-5V7z" fill="currentColor" opacity=".12"/>
@@ -92,52 +94,52 @@
         <span class="brand-text">InnoSearch</span>
       </a>
 
-      <nav class="menu" aria-label="ÁÖ¿ä ¸Ş´º">
-        <a href="./matching.html">¸ÅÄª</a>
-        <a href="./story.html">½ºÅä¸®</a>
-        <a href="./tech.html">À¯¸Á±â¼ú</a>
-        <a href="./notice.html">°øÁö»çÇ×</a>
+      <nav class="menu" aria-label="ì£¼ìš” ë©”ë‰´">
+        <a href="./matching.html">ë§¤ì¹­</a>
+        <a href="./story.html">ìŠ¤í† ë¦¬</a>
+        <a href="./tech.html">ìœ ë§ê¸°ìˆ </a>
+        <a href="./board.html">ê²Œì‹œíŒ</a>
       </nav>
     </div>
   </header>
 
   <main>
-    <!-- ·Î±×ÀÎ/È¸¿ø°¡ÀÔ°ú µ¿ÀÏÇÑ Áß¾Ó È÷¾î·Î -->
+    <!-- ë§ˆì´í˜ì´ì§€ íˆì–´ë¡œ -->
     <section class="auth-hero mp-hero">
       <div class="container">
-        <h1>¸¶ÀÌÆäÀÌÁö</h1>
-        <p class="sub">È°µ¿ ³»¿ªÀ» ÇÑ °÷¿¡¼­ °ü¸®ÇÕ´Ï´Ù.</p>
+        <h1>ë§ˆì´í˜ì´ì§€</h1>
+        <p class="sub">ë‚´ í™œë™ í˜„í™©ì„ í•œ ê³³ì—ì„œ í™•ì¸í•˜ì„¸ìš”.</p>
       </div>
     </section>
 
-    <!-- °³¿ä Ä«µå -->
+    <!-- ê°œìš” ì¹´ë“œ -->
     <section class="auth-body" style="padding-top:16px;">
       <div class="overview-card">
         <div class="avatar" aria-hidden="true"></div>
 
         <div class="ov-main">
-          <h1 id="user-name">·Îµù Áß... <span class="mini" id="user-org">¼Ò¼Ó/±â¾÷¸í:</span></h1>
+          <h1 id="user-name">ë¡œê·¸ì¸ ì¤‘... <span class="mini" id="user-org">ì†Œì†/ê¸°ê´€: -</span></h1>
 
-          <div class="quick-stats" aria-label="¿ä¾à Åë°è">
-            <div class="stat"><div class="num">0</div><div class="lab">ÀúÀåÇÑ ¸®Æ÷Æ®</div></div>
-            <div class="stat"><div class="num">0</div><div class="lab">¸ÅÄª ³»¿ª</div></div>
-            <div class="stat"><div class="num">0</div><div class="lab">¾Ë¸²</div></div>
+          <div class="quick-stats" aria-label="ìš”ì•½ í†µê³„">
+            <div class="stat"><div class="num">0</div><div class="lab">ì €ì¥í•œ ë¦¬í¬íŠ¸</div></div>
+            <div class="stat"><div class="num">0</div><div class="lab">ë§¤ì¹­ ìš”ì²­</div></div>
+            <div class="stat"><div class="num">0</div><div class="lab">ì•Œë¦¼</div></div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- È¸¿ø Å»Åğ ¹öÆ° (¹Ú½º ¹Û ÇÏ´Ü ¿À¸¥ÂÊ) -->
+    <!-- íšŒì› íƒˆí‡´ -->
     <section class="auth-body" style="padding-top: 0;">
       <div class="container" style="text-align: right;">
         <button id="deleteAccountBtn" class="btn" style="background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 14px;">
-          È¸¿ø Å»Åğ
+          íšŒì› íƒˆí‡´
         </button>
       </div>
     </section>
   </main>
 
-  <!-- ÇÏ´Ü °øÅë -->
+  <!-- í•˜ë‹¨ í‘¸í„° -->
   <footer class="site-footer">
     <div class="container foot">
       <div class="brand lite">
@@ -150,9 +152,9 @@
         <span class="brand-text">InnoSearch</span>
       </div>
       <div class="foot-right">
-        <a href="#">ÀÌ¿ë¾à°ü</a>
-        <a href="#">°³ÀÎÁ¤º¸Ã³¸®¹æÄ§</a>
-        <a href="#">°í°´¼¾ÅÍ</a>
+        <a href="#">ì´ìš©ì•½ê´€</a>
+        <a href="#">ê°œì¸ì •ë³´ì²˜ë¦¬ë°©ì¹¨</a>
+        <a href="#">ê³ ê°ì„¼í„°</a>
       </div>
     </div>
   </footer>
@@ -160,45 +162,41 @@
   <script src="./js/apiClient.js"></script>
   <script src="./js/session.js"></script>
   <script>
-    // ¸¶ÀÌÆäÀÌÁö »ç¿ëÀÚ Á¤º¸ ·Îµå
+    // ë§ˆì´í˜ì´ì§€ ìœ ì € ì •ë³´ ë¡œë”©
     document.addEventListener('DOMContentLoaded', async () => {
       try {
-        // ·Î±×ÀÎ »óÅÂ È®ÀÎ
         const response = await window.apiClient.get('/me');
         if (response.success) {
           const user = response.user;
-          
-          // »ç¿ëÀÚ ÀÌ¸§ Ç¥½Ã
           const userNameElement = document.getElementById('user-name');
           if (userNameElement) {
-            userNameElement.innerHTML = `${user.name} <span class="mini" id="user-org">¼Ò¼Ó/±â¾÷¸í: ${user.organization || '¹Ì¼³Á¤'}</span>`;
+            userNameElement.innerHTML =
+              `${user.name} <span class="mini" id="user-org">ì†Œì†/ê¸°ê´€: ${user.organization || 'ë¯¸ì…ë ¥'}</span>`;
           }
         } else {
-          // ·Î±×ÀÎÇÏÁö ¾ÊÀº °æ¿ì ·Î±×ÀÎ ÆäÀÌÁö·Î ¸®´ÙÀÌ·ºÆ®
+          // ë¯¸ë¡œê·¸ì¸ â†’ ë¡œê·¸ì¸ í˜ì´ì§€ë¡œ
           window.location.href = '/login';
         }
       } catch (error) {
-        console.error('»ç¿ëÀÚ Á¤º¸ ·Îµå ½ÇÆĞ:', error);
-        // ·Î±×ÀÎÇÏÁö ¾ÊÀº °æ¿ì ·Î±×ÀÎ ÆäÀÌÁö·Î ¸®´ÙÀÌ·ºÆ®
+        console.error('ì‚¬ìš©ì ì •ë³´ ë¡œë“œ ì˜¤ë¥˜:', error);
         window.location.href = '/login';
       }
     });
 
-    // È¸¿ø Å»Åğ ±â´É
+    // íšŒì› íƒˆí‡´
     document.getElementById('deleteAccountBtn').addEventListener('click', async () => {
-      if (confirm('Á¤¸»·Î È¸¿ø Å»Åğ¸¦ ÇÏ½Ã°Ú½À´Ï±î?\nÅ»Åğ ÈÄ¿¡´Â ¸ğµç µ¥ÀÌÅÍ°¡ »èÁ¦µÇ¸ç º¹±¸ÇÒ ¼ö ¾ø½À´Ï´Ù.')) {
-        if (confirm('¸¶Áö¸· È®ÀÎÀÔ´Ï´Ù.\nÁ¤¸»·Î Å»ÅğÇÏ½Ã°Ú½À´Ï±î?')) {
-          try {
-            const response = await window.apiClient.delete('/account');
-            if (response.success) {
-              alert('È¸¿ø Å»Åğ°¡ ¿Ï·áµÇ¾ú½À´Ï´Ù.');
-              window.location.href = '/home';
-            }
-          } catch (error) {
-            console.error('È¸¿ø Å»Åğ ½ÇÆĞ:', error);
-            alert('È¸¿ø Å»Åğ Áß ¿À·ù°¡ ¹ß»ıÇß½À´Ï´Ù.');
-          }
+      if (!confirm('ì •ë§ë¡œ íšŒì› íƒˆí‡´ í•˜ì‹œê² ìŠµë‹ˆê¹Œ?\níƒˆí‡´ í›„ì—ëŠ” ëª¨ë“  ë°ì´í„°ê°€ ì‚­ì œë˜ë©° ë³µêµ¬í•  ìˆ˜ ì—†ìŠµë‹ˆë‹¤.')) return;
+      if (!confirm('ìµœì¢… í™•ì¸ì…ë‹ˆë‹¤. ì •ë§ íƒˆí‡´í•˜ì‹œê² ìŠµë‹ˆê¹Œ?')) return;
+
+      try {
+        const response = await window.apiClient.del('/account');
+        if (response.success) {
+          alert('íšŒì› íƒˆí‡´ê°€ ì™„ë£Œë˜ì—ˆìŠµë‹ˆë‹¤.');
+          window.location.href = '/home';
         }
+      } catch (error) {
+        console.error('íšŒì› íƒˆí‡´ ì˜¤ë¥˜:', error);
+        alert('íšŒì› íƒˆí‡´ ì¤‘ ì˜¤ë¥˜ê°€ ë°œìƒí–ˆìŠµë‹ˆë‹¤.');
       }
     });
   </script>
