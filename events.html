@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>InnoSearch - 행사 일정 (지역별 보기)</title>
+  <link rel="stylesheet" href="./css/styles.css" />
+  <link rel="stylesheet" href="./css/mem_styles.css" />
+  <style>
+    body {
+      background-color: #0e1330
+    }
+    .main-content {
+      padding-top: 40px;
+      padding-bottom: 60px;
+    }
+    .section-head h2 {
+      color: #ffffff;
+    }
+    .section-head p {
+      color: #ffffffd3;
+      margin-left: 30px;
+    }
+    .tool-card {
+      background-color: #ffffff;
+      padding: 24px;
+      border-radius: 16px;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      width: 100%; /* 가로 너비를 꽉 채우도록 수정 */
+      max-width: 1200px; /* 최대 너비 설정 */
+      margin: 0 auto; /* 중앙 정렬 */
+    }
+    
+    #region-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    #region-filters button {
+      padding: 8px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      border: 1px solid #d1d5db;
+      background-color: #ffffff;
+      color: #4b5563;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    #region-filters button:hover {
+      background-color: #f3f4f6;
+      border-color: #9ca3af;
+    }
+    #region-filters button.active {
+      background-color: var(--primary);
+      color: var(--white);
+      border-color: var(--primary);
+    }
+
+    #summary {
+      margin: 16px 0;
+      font-size: 15px;
+      color: #111827;
+    }
+    .table-wrap {
+      overflow-x: auto; /* 가로 스크롤만 적용 */
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 800px;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    thead th {
+      background-color: #f9fafb;
+      padding: 14px 16px;
+      text-align: left;
+      font-weight: 600;
+      color: #111827;
+      border-bottom: 2px solid #e5e7eb;
+      font-size: 14px;
+    }
+    tbody td {
+      padding: 14px 16px;
+      border-bottom: 1px solid #f1f5f9;
+      color: #111827;
+      font-size: 14px;
+    }
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+    tbody tr:hover {
+      background-color: #eff6ff;
+    }
+    .pill {
+      background-color: #e0e7ff;
+      color: #3730a3;
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand" href="./home.html">
+        <span class="logo" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="24" height="24"><path d="M12 2l8.66 5v10L12 22l-8.66-5V7z" fill="currentColor" opacity=".12" /><path d="M12 6l6.06 3.5v7L12 20l-6.06-3.5v-7z" fill="currentColor" /></svg>
+        </span>
+        <span class="brand-text">InnoSearch</span>
+      </a>
+      <nav class="menu" aria-label="주요 메뉴">
+        <a href="./matching.html">매칭</a>
+        <a href="./story.html">스토리</a>
+        <a href="./tech.html">유망기술</a>
+        <a href="./notice.html">공지사항</a>
+      </nav>
+      <div class="nav-actions">
+        <a class="link" id="btn-login" href="./login.html">로그인</a>
+        <a class="btn primary" id="btn-signup" href="./signup.html">회원가입</a>
+        <a class="link" id="btn-mypage" href="./myLab.html" style="display: none;">마이페이지</a>
+        <a class="link" id="btn-logout" href="#" style="display: none;">로그아웃</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="section main-content">
+    <div class="container section-head">
+      <h2>연구개발특구 행사 일정</h2>
+      <p>지역별 버튼을 클릭하여 원하는 지역의 행사 정보를 확인하세요.</p>
+    </div>
+
+    <div class="container">
+      <div class="tool-card">
+        <div id="region-filters">
+            <p style="color: #6b7280; font-size: 14px; margin: 8px;">필터 로딩 중...</p>
+        </div>
+        <div id="summary"></div>
+        <div class="table-wrap">
+          <table id="tbl">
+            <thead id="thead"></thead>
+            <tbody id="tbody"><tr><td style="text-align:center; padding: 24px;">데이터를 불러오는 중입니다...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+<script src="./js/session.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const thead = document.getElementById('thead');
+  const tbody = document.getElementById('tbody');
+  const summary = document.getElementById('summary');
+  const filterContainer = document.getElementById('region-filters');
+
+  // ▶ 초기 상태
+  let state = {
+    region: '전체',
+    sort: 'dateDesc',
+    page: 1,
+    pageSize: 15,
+    totalPages: 1,
+    headers: [],
+    regions: []
+  };
+
+  // 최초 로드
+  loadAndRender();
+
+  // ===== 데이터 로드 & 렌더 =====
+  async function loadAndRender() {
+    const qs = new URLSearchParams({
+      region: state.region,
+      sort: state.sort,
+      page: String(state.page),
+      pageSize: String(state.pageSize),
+    }).toString();
+
+    const resp = await fetch(`/api/events?${qs}`, { cache: 'no-store' });
+    const data = await resp.json();
+    if (!data.success) {
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:24px;">${data.message || '로드 실패'}</td></tr>`;
+      return;
+    }
+
+    // 상태 업데이트
+    state.headers = data.headers;
+    state.regions = data.regions;
+    state.totalPages = data.totalPages;
+
+    // 지역 버튼 1회 구성
+    if (!filterContainer.dataset.ready) {
+      renderRegionButtons(data.regions);
+      filterContainer.dataset.ready = '1';
+    }
+
+    // 표/요약/페이저 렌더
+    renderTable(data.headers, data.rows);
+    summary.textContent = `'${data.region}' 지역에서 총 ${data.totalCount}건 중 ${data.page}/${data.totalPages}페이지`;
+    renderPager(data.page, data.totalPages);
+  }
+
+  // ===== 지역 버튼 =====
+  function renderRegionButtons(regions) {
+    filterContainer.innerHTML = '';
+    // 전체
+    filterContainer.appendChild(makeRegionBtn('전체', true));
+    // 개별
+    regions.forEach(r => filterContainer.appendChild(makeRegionBtn(r, false)));
+  }
+  function makeRegionBtn(text, active) {
+    const btn = document.createElement('button');
+    btn.textContent = text;
+    btn.dataset.region = text;
+    if (active) btn.classList.add('active');
+    btn.addEventListener('click', (e) => {
+      document.querySelectorAll('#region-filters button').forEach(b => b.classList.remove('active'));
+      e.currentTarget.classList.add('active');
+      state.region = text;
+      state.page = 1;              // 첫 페이지로
+      loadAndRender();             // 새로고침 없이 갱신
+    });
+    return btn;
+  }
+
+  // ===== 표 렌더 =====
+  function renderTable(headers, rows) {
+    thead.innerHTML = '';
+    const thr = document.createElement('tr');
+    headers.forEach(h => {
+      const th = document.createElement('th');
+      th.textContent = h;
+      thr.appendChild(th);
+    });
+    thead.appendChild(thr);
+
+    tbody.innerHTML = '';
+    if (!rows.length) {
+      tbody.innerHTML = `<tr><td colspan="${headers.length}" style="text-align:center; padding:24px;">결과가 없습니다.</td></tr>`;
+      return;
+    }
+
+    rows.forEach(r => {
+      const tr = document.createElement('tr');
+      headers.forEach(h => {
+        const td = document.createElement('td');
+        if (h.includes('일자') || /date/i.test(h)) {
+          const span = document.createElement('span');
+          span.className = 'pill';
+          span.textContent = r[h] || '-';
+          td.appendChild(span);
+        } else {
+          td.textContent = r[h] || '';
+        }
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+  }
+
+  // ===== 페이저 렌더 =====
+  function renderPager(page, total) {
+    // 기존 페이저 제거
+    let pager = document.getElementById('pager');
+    if (!pager) {
+      pager = document.createElement('div');
+      pager.id = 'pager';
+      pager.style.display = 'flex';
+      pager.style.flexWrap = 'wrap';
+      pager.style.gap = '6px';
+      pager.style.marginTop = '14px';
+      pager.style.alignItems = 'center';
+      thead.parentElement.parentElement.after(pager);
+    }
+    pager.innerHTML = '';
+
+    const makeBtn = (label, p, disabled = false, active = false) => {
+      const a = document.createElement('button');
+      a.textContent = label;
+      a.style.minWidth = '36px';
+      a.style.padding = '6px 10px';
+      a.style.border = '1px solid #d1d5db';
+      a.style.borderRadius = '8px';
+      a.style.background = active ? 'var(--primary)' : '#fff';
+      a.style.color = active ? 'white' : '#374151';
+      a.style.cursor = disabled ? 'default' : 'pointer';
+      if (!disabled) {
+        a.addEventListener('click', () => { state.page = p; loadAndRender(); });
+      } else {
+        a.style.opacity = '0.5';
+      }
+      return a;
+    };
+
+    // Prev
+    pager.appendChild(makeBtn('‹', Math.max(1, page - 1), page === 1));
+
+    // 페이지 목록 (현재 중심 ±2, 앞/뒤 엘립시스)
+    const pages = [];
+    const push = (x) => pages.includes(x) || pages.push(x);
+    push(1);
+    for (let i = page - 2; i <= page + 2; i++) if (i > 1 && i < total) push(i);
+    if (total > 1) push(total);
+
+    let last = 0;
+    pages.forEach(p => {
+      if (p - last > 1) {
+        const ell = document.createElement('span');
+        ell.textContent = '…';
+        ell.style.margin = '0 4px';
+        pager.appendChild(ell);
+      }
+      pager.appendChild(makeBtn(String(p), p, false, p === page));
+      last = p;
+    });
+
+    // Next
+    pager.appendChild(makeBtn('›', Math.min(total, page + 1), page === total));
+  }
+});
+</script>
+</body>
+</html>

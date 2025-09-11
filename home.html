@@ -11,7 +11,6 @@
 </head>
 
 <body>
-  <!-- 상단 고정 네비게이션 -->
   <header class="site-header">
     <div class="container nav">
       <a class="brand" href="./home.html">
@@ -24,7 +23,6 @@
         <span class="brand-text">InnoSearch</span>
       </a>
 
-      <!-- 가운데 메뉴: 모바일에서는 가로 스크롤 한 줄 유지 -->
       <nav class="menu" aria-label="주요 메뉴">
         <a href="./matching.html">매칭</a>
         <a href="./story.html">스토리</a>
@@ -32,7 +30,6 @@
         <a href="./notice.html">공지사항</a>
       </nav>
 
-      <!-- 오른쪽 액션 -->
       <div class="nav-actions">
         <a class="link" id="btn-login" href="./login.html">로그인</a>
         <a class="btn primary" id="btn-signup" href="./signup.html">회원가입</a>
@@ -44,34 +41,28 @@
   </header>
 
   <main>
-    <!-- 히어로 배너 -->
     <section class="hero">
       <div class="container hero-inner">
-        <!-- 좌: 빠른 매칭 -->
         <div class="hero-copy">
           <div class="hero-tool">
             <h3>빠른 매칭</h3>
 
             <div class="tool-card">
-              <!-- 입력 -->
               <div class="field">
                 <label class="sr-only" for="q">문제/키워드</label>
                 <input id="q" type="text" placeholder="키워드 입력 (예: 친환경)" />
               </div>
 
 
-              <!-- 버튼 -->
               <div class="actions">
                 <button class="btn primary" id="matchBtn">매칭 보기</button>
               </div>
 
-              <!-- 결과 -->
               <div id="matchingResults"></div>
             </div>
           </div>
         </div>
 
-        <!-- 우: 데코(이미지/일러스트) -->
         <div class="hero-art" aria-hidden="true">
           <div class="bubble b1"></div>
           <div class="bubble b2"></div>
@@ -79,69 +70,20 @@
         </div>
       </div>
 
-      <!-- 히어로 하단 파도 -->
       <svg class="hero-wave wave-up" viewBox="0 0 1440 160" preserveAspectRatio="none" aria-hidden="true">
         <path d="M0,64 C180,128 360,0 540,26.7 C720,53.3 900,160 1080,144 C1260,128 1350,96 1440,80 L1440,160 L0,160 Z"/>
       </svg>
     </section>
 
-    <!-- 최신 리포트 -->
     <section id="updates" class="section">
       <div class="container section-head">
         <h2>최신 리포트</h2>
       </div>
 
-      <div class="container cards">
-        <article class="card">
-          <img class="thumb" src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1200&auto=format&fit=crop" alt="리포트 썸네일">
-          <div class="card-body">
-            <div class="label-wrap">
-              <span class="label hot">이슈 리포트</span>
-              <span class="label green">소비</span>
-              <span class="label blue">산업</span>
-            </div>
-            <h3 class="card-title">8월 5주차 산업군별 소셜 인사이트 & 연관 키워드</h3>
-            <p class="card-desc">10개 산업군 소셜 빅데이터를 분석해 주간 변화와 주요 이슈를 정리했습니다.</p>
-            <div class="meta">
-              <time datetime="2025-09-03">2025-09-03</time>
-              <a href="#" class="text-btn">리포트 열람</a>
-            </div>
-          </div>
-        </article>
-
-        <article class="card">
-          <img class="thumb" src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1200&auto=format&fit=crop" alt="커뮤니티 커머스 썸네일">
-          <div class="card-body">
-            <div class="label-wrap">
-              <span class="label">소비 리포트</span>
-            </div>
-            <h3 class="card-title">취향 공동체의 힘, 커뮤니티 커머스(2025년 8월)</h3>
-            <p class="card-desc">MZ세대 커뮤니티 기반 구매 패턴과 브랜드 인게이지먼트 전략.</p>
-            <div class="meta">
-              <time datetime="2025-08-28">2025-08-28</time>
-              <a href="#" class="text-btn">요약 보기</a>
-            </div>
-          </div>
-        </article>
-
-        <article class="card">
-          <img class="thumb" src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=1200&auto=format&fit=crop" alt="AI 트렌드 썸네일">
-          <div class="card-body">
-            <div class="label-wrap">
-              <span class="label purple">AI 트렌드</span>
-            </div>
-            <h3 class="card-title">생성형 AI가 바꾸는 마케팅 운영 레이어</h3>
-            <p class="card-desc">브랜드 운영 자동화, 콘텐츠 파이프라인, 거버넌스 체크리스트.</p>
-            <div class="meta">
-              <time datetime="2025-08-22">2025-08-22</time>
-              <a href="#" class="text-btn">자세히</a>
-            </div>
-          </div>
-        </article>
-      </div>
+      <div class="container cards" id="report-cards-container">
+        </div>
     </section>
 
-    <!-- 트렌드 키워드 -->
     <section class="section tags">
       <div class="container section-head">
         <h2>최신 트렌드</h2>

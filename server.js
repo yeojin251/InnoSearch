@@ -7,6 +7,7 @@ require('dotenv').config();
 
 const authRoutes = require('./routes/auth');
 const matchingRoutes = require('./routes/matching');
+const eventsRoutes = require('./routes/events');
 const { initDatabase } = require('./db/db');
 
 const app = express();
@@ -40,6 +41,7 @@ app.use(express.static(path.join(__dirname)));
 // API 라우트
 app.use('/api', authRoutes);
 app.use('/api/matching', matchingRoutes);
+app.use('/api/events', eventsRoutes);
 
 // HTML 라우트
 app.get('/', (req, res) => {
