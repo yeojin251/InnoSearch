@@ -14,7 +14,7 @@ const boardRoutes = require('./routes/board');
 const { initDatabase } = require('./db/db');
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 
 // ===== 미들웨어 =====
 app.use(cors({

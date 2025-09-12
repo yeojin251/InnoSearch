@@ -20,7 +20,7 @@ async function initDatabase() {
   try {
     const database = getDatabase();
     
-    // 사용자 테이블 생성
+    // 사용자 테이블
     const createUsersTable = `
       CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -32,10 +32,10 @@ async function initDatabase() {
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
       )
     `;
-    
     database.exec(createUsersTable);
 
-        const createPostsTable = `
+    // 게시글/댓글 테이블
+    const createPostsTable = `
       CREATE TABLE IF NOT EXISTS posts (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id INTEGER NOT NULL,
@@ -59,28 +59,63 @@ async function initDatabase() {
     `;
     database.exec(createPostsTable);
     database.exec(createCommentsTable);
-    
-    // 인덱스 생성
+
+    // 댓글 익명번호 매핑 테이블 (게시글-사용자별 고정 번호)
+    const createAliasTable = `
+      CREATE TABLE IF NOT EXISTS post_comment_alias (
+        post_id INTEGER NOT NULL,
+        user_id INTEGER NOT NULL,
+        anon_index INTEGER NOT NULL,
+        PRIMARY KEY (post_id, user_id),
+        FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `;
+    database.exec(createAliasTable);
+
+    // 채팅 테이블
+    const createChatTables = `
+      CREATE TABLE IF NOT EXISTS chat_threads (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_a INTEGER NOT NULL,
+        user_b INTEGER NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      );
+      CREATE INDEX IF NOT EXISTS idx_chat_threads_pair ON chat_threads(user_a, user_b);
+
+      CREATE TABLE IF NOT EXISTS chat_messages (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        thread_id INTEGER NOT NULL,
+        sender_id INTEGER NOT NULL,
+        body TEXT NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (thread_id) REFERENCES chat_threads(id) ON DELETE CASCADE
+      );
+      CREATE INDEX IF NOT EXISTS idx_chat_messages_thread ON chat_messages(thread_id);
+    `;
+    database.exec(createChatTables);
+
+    // 인덱스
     const createIndexes = `
       CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
       CREATE INDEX IF NOT EXISTS idx_users_created_at ON users(created_at);
+      CREATE INDEX IF NOT EXISTS idx_posts_created ON posts(created_at);
+      CREATE INDEX IF NOT EXISTS idx_comments_post ON comments(post_id);
     `;
-    
     database.exec(createIndexes);
     
     console.log('✅ 데이터베이스 테이블 생성 완료');
     
-    // 테스트 데이터 삽입 (개발용)
+    // 테스트 유저 (개발용)
     const testUser = database.prepare('SELECT COUNT(*) as count FROM users').get();
     if (testUser.count === 0) {
       const bcrypt = require('bcrypt');
       const testPassword = await bcrypt.hash('test123', 10);
-      
       const insertTestUser = database.prepare(`
         INSERT INTO users (name, email, password_hash, organization)
         VALUES (?, ?, ?, ?)
       `);
-      
       insertTestUser.run('테스트 사용자', 'test@innosearch.com', testPassword, 'InnoSearch Lab');
       console.log('✅ 테스트 사용자 생성 완료 (test@innosearch.com / test123)');
     }
@@ -91,23 +126,18 @@ async function initDatabase() {
   }
 }
 
-// 사용자 관련 쿼리
+// 사용자 쿼리
 const userQueries = {
-  // 이메일로 사용자 찾기
   findByEmail: (email) => {
     const db = getDatabase();
     const stmt = db.prepare('SELECT * FROM users WHERE email = ?');
     return stmt.get(email);
   },
-  
-  // ID로 사용자 찾기
   findById: (id) => {
     const db = getDatabase();
     const stmt = db.prepare('SELECT id, name, email, organization, created_at FROM users WHERE id = ?');
     return stmt.get(id);
   },
-  
-  // 새 사용자 생성
   create: (userData) => {
     const db = getDatabase();
     const stmt = db.prepare(`
@@ -116,8 +146,6 @@ const userQueries = {
     `);
     return stmt.run(userData.name, userData.email, userData.password_hash, userData.organization);
   },
-  
-  // 이메일 중복 확인
   emailExists: (email) => {
     const db = getDatabase();
     const stmt = db.prepare('SELECT COUNT(*) as count FROM users WHERE email = ?');
@@ -126,15 +154,7 @@ const userQueries = {
   }
 };
 
-// 데이터베이스 연결 종료
-function closeDatabase() {
-  if (db) {
-    db.close();
-    db = null;
-  }
-}
-
-// 게시판 관련 쿼리
+// 게시판 쿼리
 const boardQueries = {
   // 새 게시글 생성
   createPost: (title, content, userId) => {
@@ -143,12 +163,16 @@ const boardQueries = {
     return stmt.run(title, content, userId);
   },
 
-  // 모든 게시글 목록 조회 (최신순)
+  // 모든 게시글 목록 조회 (최신순) — author_id, author_label 제공
   getAllPosts: () => {
     const db = getDatabase();
-    // 익명성을 위해 사용자 이름은 '익명'으로 고정하고, id와 작성일시만 가져옵니다.
     const stmt = db.prepare(`
-      SELECT p.id, p.title, '익명' as author, p.created_at
+      SELECT 
+        p.id, 
+        p.title, 
+        p.user_id AS author_id,
+        '글쓴이' AS author_label,
+        p.created_at
       FROM posts p
       ORDER BY p.id DESC
     `);
@@ -159,31 +183,144 @@ const boardQueries = {
   findPostById: (id) => {
     const db = getDatabase();
     const stmt = db.prepare(`
-      SELECT p.id, p.title, p.content, '익명' as author, p.created_at, p.user_id
+      SELECT 
+        p.id, p.title, p.content, p.user_id AS author_id, '글쓴이' AS author_label, 
+        p.created_at, p.user_id
       FROM posts p
       WHERE p.id = ?
     `);
     return stmt.get(id);
   },
 
-  // 특정 게시글의 댓글 목록 조회
-  getCommentsByPostId: (postId) => {
+  // 특정 게시글의 댓글 목록 조회 (익명 라벨 포함을 위해 alias join)
+  getCommentsByPostIdWithAnon: (postId) => {
     const db = getDatabase();
     const stmt = db.prepare(`
-      SELECT c.id, c.content, '익명' as author, c.created_at, c.user_id
+      SELECT 
+        c.id, c.post_id, c.user_id, c.content, c.created_at,
+        a.anon_index
       FROM comments c
+      LEFT JOIN post_comment_alias a 
+        ON a.post_id = c.post_id AND a.user_id = c.user_id
       WHERE c.post_id = ?
       ORDER BY c.created_at ASC
     `);
     return stmt.all(postId);
   },
 
-  // 새 댓글 추가
-  createComment: (postId, userId, content) => {
+  // 익명번호 보장: 있으면 반환, 없으면 다음 번호로 부여
+  ensureAnonIndex: (postId, userId) => {
     const db = getDatabase();
-    const stmt = db.prepare('INSERT INTO comments (post_id, user_id, content) VALUES (?, ?, ?)');
+    const getStmt = db.prepare(`
+      SELECT anon_index FROM post_comment_alias WHERE post_id = ? AND user_id = ?
+    `);
+    const row = getStmt.get(postId, userId);
+    if (row && row.anon_index) return row.anon_index;
+
+    const maxStmt = db.prepare(`
+      SELECT COALESCE(MAX(anon_index), 0) AS max_idx 
+      FROM post_comment_alias WHERE post_id = ?
+    `);
+    const { max_idx } = maxStmt.get(postId);
+    const nextIdx = (max_idx || 0) + 1;
+
+    const ins = db.prepare(`
+      INSERT INTO post_comment_alias (post_id, user_id, anon_index) VALUES (?, ?, ?)
+    `);
+    ins.run(postId, userId, nextIdx);
+    return nextIdx;
+  },
+
+  // 새 댓글 추가 (익명번호 함께 저장)
+  createComment: (postId, userId, content, anonIndex) => {
+    const db = getDatabase();
+    const stmt = db.prepare(`
+      INSERT INTO comments (post_id, user_id, content) VALUES (?, ?, ?)
+    `);
+    // comments 테이블에는 anon_index를 직접 저장하지 않지만, alias 테이블로 매핑 유지
     return stmt.run(postId, userId, content);
   },
+};
+
+// 채팅 쿼리 (1:1)
+const chatQueries = {
+  // participants 정렬 키 생성
+  _pair: (a, b) => {
+    const aNum = Number(a), bNum = Number(b);
+    return aNum < bNum ? [aNum, bNum] : [bNum, aNum];
+  },
+
+  // 스레드 찾기/생성
+  openThread: (me, peer) => {
+    const db = getDatabase();
+    const [a, b] = chatQueries._pair(me, peer);
+
+    const findStmt = db.prepare(`
+      SELECT id FROM chat_threads 
+      WHERE (user_a = ? AND user_b = ?) OR (user_a = ? AND user_b = ?)
+      LIMIT 1
+    `);
+    const found = findStmt.get(a, b, a, b);
+    if (found && found.id) return found.id;
+
+    const ins = db.prepare(`
+      INSERT INTO chat_threads (user_a, user_b) VALUES (?, ?)
+    `);
+    const r = ins.run(a, b);
+    return r.lastInsertRowid;
+  },
+
+  listMyThreads: (me) => {
+    const db = getDatabase();
+    const stmt = db.prepare(`
+      SELECT id, user_a, user_b, created_at, updated_at
+      FROM chat_threads
+      WHERE user_a = ? OR user_b = ?
+      ORDER BY updated_at DESC
+    `);
+    return stmt.all(me, me);
+  },
+
+  getThread: (id) => {
+    const db = getDatabase();
+    const stmt = db.prepare(`
+      SELECT id, user_a, user_b FROM chat_threads WHERE id = ?
+    `);
+    return stmt.get(id);
+  },
+
+  listMessages: (threadId) => {
+    const db = getDatabase();
+    const stmt = db.prepare(`
+      SELECT id, thread_id, sender_id, body, created_at
+      FROM chat_messages
+      WHERE thread_id = ?
+      ORDER BY created_at ASC, id ASC
+    `);
+    return stmt.all(threadId);
+  },
+
+  sendMessage: (threadId, senderId, body) => {
+    const db = getDatabase();
+    const insMsg = db.prepare(`
+      INSERT INTO chat_messages (thread_id, sender_id, body) VALUES (?, ?, ?)
+    `);
+    const r = insMsg.run(threadId, senderId, body);
+
+    const updThread = db.prepare(`
+      UPDATE chat_threads SET updated_at = CURRENT_TIMESTAMP WHERE id = ?
+    `);
+    updThread.run(threadId);
+
+    return r;
+  }
+};
+
+function closeDatabase() {
+  if (db) {
+    db.close();
+    db = null;
+  }
 }
 
 module.exports = {
@@ -191,5 +328,6 @@ module.exports = {
   initDatabase,
   userQueries,
   boardQueries,
+  chatQueries,
   closeDatabase
 };

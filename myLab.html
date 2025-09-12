@@ -189,7 +189,7 @@
       if (!confirm('최종 확인입니다. 정말 탈퇴하시겠습니까?')) return;
 
       try {
-        const response = await window.apiClient.del('/account');
+        const response = await window.apiClient.delete('/account');
         if (response.success) {
           alert('회원 탈퇴가 완료되었습니다.');
           window.location.href = '/home';
