@@ -1,99 +1,120 @@
-// js/post-detail.js
+// public/js/post-detail.js
 document.addEventListener('DOMContentLoaded', async () => {
-    const postId = new URLSearchParams(window.location.search).get('id');
-    if (!postId) {
-        alert('잘못된 접근입니다.');
-        window.location.href = '/board.html';
+  // 세션은 실패해도 진행 (initPromise는 reject되지 않도록 구성되어 있어야 함)
+  await window.sessionManager.initPromise;
+
+  const postContainer = document.getElementById('post-container');
+  const commentsWrap  = document.getElementById('comment-list');   // 리스트 영역 (DIV)
+  const commentForm   = document.getElementById('comment-form');
+  const commentInput  = document.getElementById('comment-content'); // <textarea id="comment-content">
+
+  const url = new URL(window.location.href);
+  const id = Number(url.searchParams.get('id'));
+  if (!id) {
+    renderPostError('잘못된 접근입니다. (id 없음)');
+    return;
+  }
+
+  // 안전한 HTML 이스케이프
+  function escapeHTML(str) {
+    if (typeof str !== 'string') return '';
+    return str.replace(/[&<>"']/g, (m) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
+
+  function renderPost(post) {
+  postContainer.innerHTML = `
+    <article class="post-card">
+      <div id="post-header">
+        <h1></h1>
+        <div id="post-meta"></div>
+      </div>
+      <pre id="post-content" style="white-space:pre-wrap;"></pre>
+    </article>
+  `;
+  const titleEl   = postContainer.querySelector('#post-header h1');
+  const metaEl    = postContainer.querySelector('#post-meta');
+  const contentEl = postContainer.querySelector('#post-content');
+
+  titleEl.textContent   = post.title ?? '(제목 없음)';
+  metaEl.textContent    = `${post.author || '익명'} · ${new Date(post.created_at).toLocaleString()}`;
+  contentEl.textContent = post.content || '';
+}
+
+  function renderPostError(msg) {
+    postContainer.innerHTML = `
+      <article class="post-card">
+        <h1 class="post-title">오류</h1>
+        <div class="post-content" style="color:#b00;">${escapeHTML(msg)}</div>
+      </article>
+    `;
+  }
+
+  async function loadPost() {
+    const detail = await window.apiClient.get(`/board/posts/${id}`);
+    if (!detail?.success || !detail?.post) {
+      renderPostError('게시글을 찾을 수 없습니다.');
+      return null;
+    }
+    renderPost(detail.post);
+    return detail.post;
+  }
+
+  async function loadComments() {
+    try {
+      const r = await window.apiClient.get(`/board/posts/${id}/comments`);
+      const list = r?.comments || [];
+      if (list.length === 0) {
+        commentsWrap.innerHTML = `<div class="comment-empty">댓글이 없습니다.</div>`;
         return;
+      }
+      commentsWrap.innerHTML = list.map(c => `
+        <div class="comment-item">
+          <div class="comment-head">
+            <span class="comment-author">${escapeHTML(c.anonLabel || '익명')}</span>
+            <span class="comment-date">${new Date(c.created_at).toLocaleString()}</span>
+          </div>
+          <div class="comment-body">${escapeHTML(c.content)}</div>
+        </div>
+      `).join('');
+    } catch (e) {
+      console.error('댓글 로드 오류:', e);
+      commentsWrap.innerHTML = `<div class="comment-error">댓글을 불러올 수 없습니다.</div>`;
     }
+  }
 
-    const postContainer = document.getElementById('post-container');
-    const commentList = document.getElementById('comment-list');
-    const commentForm = document.getElementById('comment-form');
+  // 초기 로드
+  try {
+    const post = await loadPost();
+    if (post) await loadComments();
+  } catch (err) {
+    console.error('상세 로드 오류:', err);
+    renderPostError('상세 정보를 불러오는 중 오류가 발생했습니다.');
+  }
 
-    async function loadPostAndComments() {
-        try {
-            // 게시글과 댓글을 동시에 요청
-            const [postRes, commentsRes] = await Promise.all([
-                window.apiClient.get(`/board/posts/${postId}`),
-                window.apiClient.get(`/board/posts/${postId}/comments`)
-            ]);
-
-            if (postRes.success) {
-                renderPost(postRes.post);
-            }
-            if (commentsRes.success) {
-                renderComments(commentsRes.comments);
-            }
-        } catch (error) {
-            postContainer.innerHTML = `<p>게시글을 불러오는 중 오류가 발생했습니다.</p>`;
-        }
-    }
-
-    function renderPost(post) {
-        document.title = `${post.title} – InnoSearch`;
-        postContainer.innerHTML = `
-            <div id="post-header">
-                <h1>${escapeHTML(post.title)}</h1>
-                <div id="post-meta">
-                    <span>작성자: ${escapeHTML(post.author)}</span> |
-                    <span>작성일: ${new Date(post.created_at).toLocaleString()}</span>
-                </div>
-            </div>
-            <div id="post-content">
-                ${escapeHTML(post.content).replace(/\n/g, '<br>')}
-            </div>
-        `;
-    }
-
-    function renderComments(comments) {
-        commentList.innerHTML = '';
-        if (comments.length === 0) {
-            commentList.innerHTML = '<p>작성된 댓글이 없습니다.</p>';
-            return;
-        }
-        comments.forEach(comment => {
-            const div = document.createElement('div');
-            div.className = 'comment-item';
-            div.innerHTML = `
-                <div class="comment-meta">
-                    <span class="comment-author">${escapeHTML(comment.author)}</span>
-                    <span class="comment-date">${new Date(comment.created_at).toLocaleString()}</span>
-                </div>
-                <p class="comment-content">${escapeHTML(comment.content)}</p>
-            `;
-            commentList.appendChild(div);
-        });
-    }
-
+  // 댓글 작성
+  if (commentForm) {
     commentForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        if (!window.sessionManager || !window.sessionManager.isLoggedIn()) {
-            alert('댓글을 작성하려면 로그인이 필요합니다.');
-            return;
-        }
+      e.preventDefault();
+      if (!window.sessionManager.isLoggedIn()) {
+        alert('로그인이 필요합니다.');
+        location.href = '/login.html';
+        return;
+      }
+      const content = (commentInput?.value || '').trim();
+      if (!content) return;
 
-        const contentInput = document.getElementById('comment-content');
-        const content = contentInput.value.trim();
-        if (!content) {
-            alert('댓글 내용을 입력해주세요.');
-            return;
+      try {
+        const r = await window.apiClient.post(`/board/posts/${id}/comments`, { content });
+        if (r?.success) {
+          commentInput.value = '';
+          await loadComments();
+        } else {
+          alert(r?.message || '댓글 작성 실패');
         }
-
-        try {
-            const response = await window.apiClient.post(`/board/posts/${postId}/comments`, { content });
-            if (response.success) {
-                contentInput.value = '';
-                loadPostAndComments(); // 댓글 목록 새로고침
-            }
-        } catch (error) {
-            alert(error.message || '댓글 등록에 실패했습니다.');
-        }
+      } catch (err) {
+        console.error('댓글 작성 오류:', err);
+        alert('댓글 작성 중 오류가 발생했습니다.');
+      }
     });
-    
-    function escapeHTML(str) {
-      return str.replace(/[&<>"']/g, match => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[match]);
-    }
-
-    loadPostAndComments();
+  }
 });

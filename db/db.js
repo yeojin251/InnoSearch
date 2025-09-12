@@ -167,46 +167,56 @@ const boardQueries = {
   getAllPosts: () => {
     const db = getDatabase();
     const stmt = db.prepare(`
-      SELECT 
-        p.id, 
-        p.title, 
-        p.user_id AS author_id,
-        '글쓴이' AS author_label,
-        p.created_at
-      FROM posts p
-      ORDER BY p.id DESC
+        SELECT 
+            p.id, 
+            p.title, 
+            p.created_at,
+            u.name AS author -- users 테이블에서 name을 가져와 author로 별칭
+        FROM posts p
+        JOIN users u ON p.user_id = u.id -- users 테이블과 JOIN
+        ORDER BY p.id DESC
     `);
     return stmt.all();
-  },
+},
 
   // ID로 특정 게시글 조회
   findPostById: (id) => {
     const db = getDatabase();
     const stmt = db.prepare(`
-      SELECT 
-        p.id, p.title, p.content, p.user_id AS author_id, '글쓴이' AS author_label, 
-        p.created_at, p.user_id
-      FROM posts p
-      WHERE p.id = ?
+        SELECT 
+            p.id, 
+            p.title, 
+            p.content, 
+            p.created_at, 
+            p.user_id, 
+            u.name AS author -- users 테이블에서 name을 가져와 author로 별칭
+        FROM posts p
+        JOIN users u ON p.user_id = u.id -- users 테이블과 JOIN
+        WHERE p.id = ?
     `);
     return stmt.get(id);
-  },
+},
 
   // 특정 게시글의 댓글 목록 조회 (익명 라벨 포함을 위해 alias join)
   getCommentsByPostIdWithAnon: (postId) => {
     const db = getDatabase();
     const stmt = db.prepare(`
-      SELECT 
-        c.id, c.post_id, c.user_id, c.content, c.created_at,
-        a.anon_index
-      FROM comments c
-      LEFT JOIN post_comment_alias a 
-        ON a.post_id = c.post_id AND a.user_id = c.user_id
-      WHERE c.post_id = ?
-      ORDER BY c.created_at ASC
+        SELECT 
+            c.id, 
+            c.post_id, 
+            c.user_id, 
+            c.content, 
+            c.created_at,
+            a.anon_index,
+            u.name AS author -- users 테이블에서 name을 가져와 author로 별칭 추가
+        FROM comments c
+        JOIN users u ON c.user_id = u.id -- users 테이블과 JOIN
+        LEFT JOIN post_comment_alias a ON a.post_id = c.post_id AND a.user_id = c.user_id
+        WHERE c.post_id = ?
+        ORDER BY c.created_at ASC
     `);
     return stmt.all(postId);
-  },
+},
 
   // 익명번호 보장: 있으면 반환, 없으면 다음 번호로 부여
   ensureAnonIndex: (postId, userId) => {
