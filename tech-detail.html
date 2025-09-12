@@ -18,6 +18,22 @@
     table{ width:100%; border-collapse:collapse; }
     th, td{ text-align:left; border-bottom:1px solid #f1f5f9; padding:10px 8px; color:#111827; }
     th{ width:280px; color:#374151; font-weight:700; background:#f9fafb; }
+
+    /* 버튼 스타일 추가 (기존 styles.css에 .btn이 있지만, 여기서도 정의해 만일의 경우 대비) */
+    #paper-search-actions .btn {
+        display: inline-block;
+        padding: 8px 15px;
+        margin: 5px 10px 5px 0;
+        background-color: #2563eb;
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: bold;
+        transition: background-color 0.2s;
+    }
+    #paper-search-actions .btn:hover {
+        background-color: #1d4ed8;
+    }
   </style>
 </head>
 <body>
@@ -32,15 +48,12 @@
         </span>
         <span class="brand-text">InnoSearch</span>
       </a>
-
       <nav class="menu" aria-label="주요 메뉴">
         <a href="./matching.html">기술/분야</a>
         <a href="./goodex.html">우수사례</a>
         <a href="./organ.html">창업시설</a>
         <a href="./board.html">게시판</a>
       </nav>
-
-      <!-- 로그인/회원가입/마이페이지/로그아웃 -->
       <div class="nav-actions">
         <a class="link" id="btn-login"  href="./login.html">로그인</a>
         <a class="btn primary" id="btn-signup" href="./signup.html">회원가입</a>
@@ -61,12 +74,15 @@
             <tbody></tbody>
           </table>
         </div>
+        <div id="paper-search-actions" style="margin-top: 20px;">
+        <h4>관련 논문 검색 🔎</h4>
+        </div>
+      </div>
       </div>
     </div>
   </main>
 
-  <footer class="site-footer">
-    <div class="container foot">
+  <footer class="site-header"> <div class="container foot">
       <div class="brand lite">
         <span class="logo" aria-hidden="true">
           <svg viewBox="0 0 24 24" width="24" height="24">
@@ -84,7 +100,6 @@
     </div>
   </footer>
 
-  <!-- 세션 토글용 공통 스크립트 -->
   <script src="./js/apiClient.js"></script>
   <script src="./js/session.js"></script>
 
@@ -94,7 +109,6 @@
       .replaceAll('"','&quot;').replaceAll("'",'&#39;');
 
     document.addEventListener('DOMContentLoaded', () => {
-      // localStorage 에 저장된 전체 레코드로 상세 출력
       const dataRaw = localStorage.getItem('selectedTechFull');
       if (!dataRaw) {
         document.getElementById('techName').textContent = '선택된 기술이 없습니다.';
@@ -103,7 +117,8 @@
       }
 
       const data = JSON.parse(dataRaw);
-      document.getElementById('techName').textContent = data.name || '기술 상세';
+      const techName = data.name || '기술 상세'; // 기술명 추출
+      document.getElementById('techName').textContent = techName;
       document.getElementById('techMeta').textContent = `데이터 소스: ${data.source || '-'}`;
 
       const tbody = document.querySelector('#detailTable tbody');
@@ -115,6 +130,26 @@
         tr.innerHTML = `<th>${esc(key)}</th><td>${esc(val ?? '')}</td>`;
         tbody.appendChild(tr);
       });
+
+      // ===== ✅ 논문 검색 버튼 생성 코드 시작 =====
+      const paperSearchActions = document.getElementById('paper-search-actions');
+      const encodedTechName = encodeURIComponent(techName);
+
+      const searchEngines = {
+        'Google Scholar': `https://scholar.google.com/scholar?q=${encodedTechName}`,
+        'RISS': `http://www.riss.kr/search/Search.do?isDetailSearch=N&searchGubun=true&viewYn=OP&query=${encodedTechName}`,
+        'DBpia': `https://www.dbpia.co.kr/search/topSearch?startCount=0&collection=ALL&searchField=ALL&sort=RANK&query=${encodedTechName}&prevQuery=${encodedTechName}`
+      };
+
+      for (const [engineName, url] of Object.entries(searchEngines)) {
+        const button = document.createElement('a');
+        button.href = url;
+        button.textContent = `${engineName}에서 검색`;
+        button.target = '_blank'; // 새 탭에서 열기
+        button.className = 'btn'; // 스타일 적용
+        paperSearchActions.appendChild(button);
+      }
+      // ===== 논문 검색 버튼 생성 코드 끝 =====
     });
   </script>
 </body>
