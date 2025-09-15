@@ -4,10 +4,10 @@ const router = express.Router();
 const { requireAuthAPI } = require('../middleware/requireAuth');
 const { boardQueries } = require('../db/db');
 
-// 게시글 목록 가져오기 (모두 보기 + 채팅을 위한 author_id 포함)
+// 게시글 목록
 router.get('/posts', (req, res) => {
   try {
-    const posts = boardQueries.getAllPosts(); // author_id, author_label 포함
+    const posts = boardQueries.getAllPosts();
     res.json({ success: true, posts });
   } catch (error) {
     console.error('게시글 목록 조회 오류:', error);
@@ -25,15 +25,11 @@ router.post('/posts', requireAuthAPI, (req, res) => {
   }
 
   try {
-    // 현재 한국 시간 기준 저장
-    const createdAt = new Date().toLocaleString("ko-KR", { timeZone: "Asia/Seoul" });
-
-    const result = boardQueries.createPost(title, content, userId, createdAt);
+    const result = boardQueries.createPost(title, content, userId);
     res.status(201).json({
       success: true,
       message: '게시글이 성공적으로 작성되었습니다.',
-      postId: result.lastInsertRowid,
-      created_at: createdAt
+      postId: result.lastInsertRowid
     });
   } catch (error) {
     console.error('게시글 작성 오류:', error);
@@ -41,7 +37,7 @@ router.post('/posts', requireAuthAPI, (req, res) => {
   }
 });
 
-// 특정 게시글 상세 정보 가져오기
+// 게시글 상세
 router.get('/posts/:id', (req, res) => {
   try {
     const post = boardQueries.findPostById(req.params.id);
@@ -56,17 +52,16 @@ router.get('/posts/:id', (req, res) => {
   }
 });
 
-// 특정 게시글의 댓글 목록 가져오기 (익명n 라벨 동봉)
+// 댓글 목록 (표시 이름 포함)
 router.get('/posts/:id/comments', (req, res) => {
   try {
-    const comments = boardQueries.getCommentsByPostIdWithAnon(req.params.id).map(c => ({
+    const comments = boardQueries.getCommentsByPostId(req.params.id).map(c => ({
       id: c.id,
       post_id: c.post_id,
       user_id: c.user_id,
       content: c.content,
       created_at: c.created_at,
-      anonIndex: c.anon_index,
-      anonLabel: c.anon_index ? `익명${c.anon_index}` : '익명'
+      display_name: c.display_name
     }));
     res.json({ success: true, comments });
   } catch (error) {
@@ -75,38 +70,22 @@ router.get('/posts/:id/comments', (req, res) => {
   }
 });
 
-// 새 댓글 작성 (게시글 단위 익명1/2/… 고정 배정)
+// 새 댓글 작성 (익명제 폐지)
 router.post('/posts/:id/comments', requireAuthAPI, (req, res) => {
   const { content } = req.body;
   const postId = req.params.id;
   const userId = req.session.userId;
 
-  if (!content) {
+  if (!content || !content.trim()) {
     return res.status(400).json({ success: false, message: '댓글 내용을 입력해주세요.' });
   }
 
   try {
-    // 익명 번호 부여/획득
-    const anonIndex = boardQueries.ensureAnonIndex(postId, userId);
-
-    // 현재 한국 시간 기준 저장
-    const createdAt = new Date().toLocaleString("ko-KR", { timeZone: "Asia/Seoul" });
-
-    // 댓글 생성
-    const r = boardQueries.createComment(postId, userId, content, anonIndex, createdAt);
-
+    const r = boardQueries.createComment(postId, userId, content.trim());
     res.status(201).json({
       success: true,
       message: '댓글이 성공적으로 작성되었습니다.',
-      comment: {
-        id: r.lastInsertRowid,
-        post_id: postId,
-        user_id: userId,
-        content,
-        anonIndex,
-        anonLabel: `익명${anonIndex}`,
-        created_at: createdAt
-      }
+      comment_id: r.lastInsertRowid
     });
   } catch (error) {
     console.error('댓글 작성 오류:', error);

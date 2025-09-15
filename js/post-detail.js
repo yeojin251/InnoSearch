@@ -1,4 +1,3 @@
-// public/js/post-detail.js
 document.addEventListener('DOMContentLoaded', async () => {
   await window.sessionManager.initPromise;
 
@@ -34,7 +33,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const contentEl = postContainer.querySelector('#post-content');
 
     titleEl.textContent   = post.title ?? '(제목 없음)';
-    metaEl.textContent    = `${post.author || '익명'} · ${new Date(post.created_at).toLocaleString("ko-KR", { timeZone: "Asia/Seoul" })}`;
+    metaEl.textContent    = `${post.author || ''} · ${new Date(post.created_at).toLocaleString("ko-KR", { timeZone: "Asia/Seoul" })}`;
     contentEl.textContent = post.content || '';
   }
 
@@ -68,7 +67,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       commentsWrap.innerHTML = list.map(c => `
         <div class="comment-item">
           <div class="comment-head">
-            <span class="comment-author">${escapeHTML(c.anonLabel || '익명')}</span>
+            <span class="comment-author">${escapeHTML(c.display_name || '')}</span>
             <span class="comment-date">${new Date(c.created_at).toLocaleString("ko-KR", { timeZone: "Asia/Seoul" })}</span>
           </div>
           <div class="comment-body">${escapeHTML(c.content)}</div>
