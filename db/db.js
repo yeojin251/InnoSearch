@@ -156,11 +156,12 @@ const userQueries = {
 
 // 게시판 쿼리
 const boardQueries = {
-  // 새 게시글 생성
+  // 새 게시글 생성 (현재 서버 시간으로 저장)
   createPost: (title, content, userId) => {
     const db = getDatabase();
-    const stmt = db.prepare('INSERT INTO posts (title, content, user_id) VALUES (?, ?, ?)');
-    return stmt.run(title, content, userId);
+    const now = new Date().toISOString(); // 서버 현재 시간
+    const stmt = db.prepare('INSERT INTO posts (title, content, user_id, created_at) VALUES (?, ?, ?, ?)');
+    return stmt.run(title, content, userId, now);
   },
 
   // 모든 게시글 목록 조회 (최신순) — author_id, author_label 제공
@@ -171,13 +172,13 @@ const boardQueries = {
             p.id, 
             p.title, 
             p.created_at,
-            u.name AS author -- users 테이블에서 name을 가져와 author로 별칭
+            u.name AS author
         FROM posts p
-        JOIN users u ON p.user_id = u.id -- users 테이블과 JOIN
+        JOIN users u ON p.user_id = u.id
         ORDER BY p.id DESC
     `);
     return stmt.all();
-},
+  },
 
   // ID로 특정 게시글 조회
   findPostById: (id) => {
@@ -189,15 +190,15 @@ const boardQueries = {
             p.content, 
             p.created_at, 
             p.user_id, 
-            u.name AS author -- users 테이블에서 name을 가져와 author로 별칭
+            u.name AS author
         FROM posts p
-        JOIN users u ON p.user_id = u.id -- users 테이블과 JOIN
+        JOIN users u ON p.user_id = u.id
         WHERE p.id = ?
     `);
     return stmt.get(id);
-},
+  },
 
-  // 특정 게시글의 댓글 목록 조회 (익명 라벨 포함을 위해 alias join)
+  // 특정 게시글의 댓글 목록 조회
   getCommentsByPostIdWithAnon: (postId) => {
     const db = getDatabase();
     const stmt = db.prepare(`
@@ -208,17 +209,17 @@ const boardQueries = {
             c.content, 
             c.created_at,
             a.anon_index,
-            u.name AS author -- users 테이블에서 name을 가져와 author로 별칭 추가
+            u.name AS author
         FROM comments c
-        JOIN users u ON c.user_id = u.id -- users 테이블과 JOIN
+        JOIN users u ON c.user_id = u.id
         LEFT JOIN post_comment_alias a ON a.post_id = c.post_id AND a.user_id = c.user_id
         WHERE c.post_id = ?
         ORDER BY c.created_at ASC
     `);
     return stmt.all(postId);
-},
+  },
 
-  // 익명번호 보장: 있으면 반환, 없으면 다음 번호로 부여
+  // 익명번호 보장
   ensureAnonIndex: (postId, userId) => {
     const db = getDatabase();
     const getStmt = db.prepare(`
@@ -241,26 +242,24 @@ const boardQueries = {
     return nextIdx;
   },
 
-  // 새 댓글 추가 (익명번호 함께 저장)
+  // 새 댓글 추가 (현재 서버 시간으로 저장)
   createComment: (postId, userId, content, anonIndex) => {
     const db = getDatabase();
+    const now = new Date().toISOString();
     const stmt = db.prepare(`
-      INSERT INTO comments (post_id, user_id, content) VALUES (?, ?, ?)
+      INSERT INTO comments (post_id, user_id, content, created_at) VALUES (?, ?, ?, ?)
     `);
-    // comments 테이블에는 anon_index를 직접 저장하지 않지만, alias 테이블로 매핑 유지
-    return stmt.run(postId, userId, content);
+    return stmt.run(postId, userId, content, now);
   },
 };
 
 // 채팅 쿼리 (1:1)
 const chatQueries = {
-  // participants 정렬 키 생성
   _pair: (a, b) => {
     const aNum = Number(a), bNum = Number(b);
     return aNum < bNum ? [aNum, bNum] : [bNum, aNum];
   },
 
-  // 스레드 찾기/생성
   openThread: (me, peer) => {
     const db = getDatabase();
     const [a, b] = chatQueries._pair(me, peer);
@@ -312,15 +311,16 @@ const chatQueries = {
 
   sendMessage: (threadId, senderId, body) => {
     const db = getDatabase();
+    const now = new Date().toISOString();
     const insMsg = db.prepare(`
-      INSERT INTO chat_messages (thread_id, sender_id, body) VALUES (?, ?, ?)
+      INSERT INTO chat_messages (thread_id, sender_id, body, created_at) VALUES (?, ?, ?, ?)
     `);
-    const r = insMsg.run(threadId, senderId, body);
+    const r = insMsg.run(threadId, senderId, body, now);
 
     const updThread = db.prepare(`
-      UPDATE chat_threads SET updated_at = CURRENT_TIMESTAMP WHERE id = ?
+      UPDATE chat_threads SET updated_at = ? WHERE id = ?
     `);
-    updThread.run(threadId);
+    updThread.run(now, threadId);
 
     return r;
   }

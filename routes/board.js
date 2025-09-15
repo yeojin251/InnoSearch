@@ -25,11 +25,15 @@ router.post('/posts', requireAuthAPI, (req, res) => {
   }
 
   try {
-    const result = boardQueries.createPost(title, content, userId);
+    // 현재 한국 시간 기준 저장
+    const createdAt = new Date().toLocaleString("ko-KR", { timeZone: "Asia/Seoul" });
+
+    const result = boardQueries.createPost(title, content, userId, createdAt);
     res.status(201).json({
       success: true,
       message: '게시글이 성공적으로 작성되었습니다.',
-      postId: result.lastInsertRowid
+      postId: result.lastInsertRowid,
+      created_at: createdAt
     });
   } catch (error) {
     console.error('게시글 작성 오류:', error);
@@ -84,8 +88,12 @@ router.post('/posts/:id/comments', requireAuthAPI, (req, res) => {
   try {
     // 익명 번호 부여/획득
     const anonIndex = boardQueries.ensureAnonIndex(postId, userId);
+
+    // 현재 한국 시간 기준 저장
+    const createdAt = new Date().toLocaleString("ko-KR", { timeZone: "Asia/Seoul" });
+
     // 댓글 생성
-    const r = boardQueries.createComment(postId, userId, content, anonIndex);
+    const r = boardQueries.createComment(postId, userId, content, anonIndex, createdAt);
 
     res.status(201).json({
       success: true,
@@ -96,7 +104,8 @@ router.post('/posts/:id/comments', requireAuthAPI, (req, res) => {
         user_id: userId,
         content,
         anonIndex,
-        anonLabel: `익명${anonIndex}`
+        anonLabel: `익명${anonIndex}`,
+        created_at: createdAt
       }
     });
   } catch (error) {

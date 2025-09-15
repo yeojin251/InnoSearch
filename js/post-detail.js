@@ -1,12 +1,11 @@
 // public/js/post-detail.js
 document.addEventListener('DOMContentLoaded', async () => {
-  // 세션은 실패해도 진행 (initPromise는 reject되지 않도록 구성되어 있어야 함)
   await window.sessionManager.initPromise;
 
   const postContainer = document.getElementById('post-container');
-  const commentsWrap  = document.getElementById('comment-list');   // 리스트 영역 (DIV)
+  const commentsWrap  = document.getElementById('comment-list');
   const commentForm   = document.getElementById('comment-form');
-  const commentInput  = document.getElementById('comment-content'); // <textarea id="comment-content">
+  const commentInput  = document.getElementById('comment-content');
 
   const url = new URL(window.location.href);
   const id = Number(url.searchParams.get('id'));
@@ -15,30 +14,29 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  // 안전한 HTML 이스케이프
   function escapeHTML(str) {
     if (typeof str !== 'string') return '';
     return str.replace(/[&<>"']/g, (m) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
   }
 
   function renderPost(post) {
-  postContainer.innerHTML = `
-    <article class="post-card">
-      <div id="post-header">
-        <h1></h1>
-        <div id="post-meta"></div>
-      </div>
-      <pre id="post-content" style="white-space:pre-wrap;"></pre>
-    </article>
-  `;
-  const titleEl   = postContainer.querySelector('#post-header h1');
-  const metaEl    = postContainer.querySelector('#post-meta');
-  const contentEl = postContainer.querySelector('#post-content');
+    postContainer.innerHTML = `
+      <article class="post-card">
+        <div id="post-header">
+          <h1></h1>
+          <div id="post-meta"></div>
+        </div>
+        <pre id="post-content" style="white-space:pre-wrap;"></pre>
+      </article>
+    `;
+    const titleEl   = postContainer.querySelector('#post-header h1');
+    const metaEl    = postContainer.querySelector('#post-meta');
+    const contentEl = postContainer.querySelector('#post-content');
 
-  titleEl.textContent   = post.title ?? '(제목 없음)';
-  metaEl.textContent    = `${post.author || '익명'} · ${new Date(post.created_at).toLocaleString()}`;
-  contentEl.textContent = post.content || '';
-}
+    titleEl.textContent   = post.title ?? '(제목 없음)';
+    metaEl.textContent    = `${post.author || '익명'} · ${new Date(post.created_at).toLocaleString("ko-KR", { timeZone: "Asia/Seoul" })}`;
+    contentEl.textContent = post.content || '';
+  }
 
   function renderPostError(msg) {
     postContainer.innerHTML = `
@@ -71,7 +69,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         <div class="comment-item">
           <div class="comment-head">
             <span class="comment-author">${escapeHTML(c.anonLabel || '익명')}</span>
-            <span class="comment-date">${new Date(c.created_at).toLocaleString()}</span>
+            <span class="comment-date">${new Date(c.created_at).toLocaleString("ko-KR", { timeZone: "Asia/Seoul" })}</span>
           </div>
           <div class="comment-body">${escapeHTML(c.content)}</div>
         </div>
@@ -82,7 +80,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
-  // 초기 로드
   try {
     const post = await loadPost();
     if (post) await loadComments();
@@ -91,7 +88,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderPostError('상세 정보를 불러오는 중 오류가 발생했습니다.');
   }
 
-  // 댓글 작성
   if (commentForm) {
     commentForm.addEventListener('submit', async (e) => {
       e.preventDefault();
