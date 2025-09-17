@@ -43,7 +43,7 @@ function migrateUsersTable() {
   // 컬럼 누락 시 추가(구 DB 호환)
   if (!hasColumn('users', 'nickname')) {
     database.exec(`ALTER TABLE users ADD COLUMN nickname TEXT UNIQUE;`);
-    // 기본 닉네임을 name 또는 email local-part로 채우고, 중복 시 suffix
+    // 기본 닉네임 채우기
     const users = database.prepare(`SELECT id, name, email FROM users`).all();
     const existsNick = new Set(
       database.prepare(`SELECT nickname FROM users WHERE nickname IS NOT NULL`).all().map(r => r.nickname)
@@ -115,7 +115,7 @@ async function initDatabase() {
     database.exec(createPostsTable);
     database.exec(createCommentsTable);
 
-    // (기존) 익명번호 매핑 테이블은 더 이상 사용하지 않지만, 호환을 위해 남겨둠
+    // (기존) 익명번호 매핑 테이블 호환
     database.exec(`
       CREATE TABLE IF NOT EXISTS post_comment_alias (
         post_id INTEGER NOT NULL,
@@ -127,14 +127,31 @@ async function initDatabase() {
       )
     `);
 
-    // 채팅 테이블
+    // ✅ 사용자 공개 프로필 (없으면 생성)
+    const createUserProfiles = `
+      CREATE TABLE IF NOT EXISTS user_profiles (
+        user_id INTEGER PRIMARY KEY,
+        display_name TEXT,
+        job_title TEXT,
+        interests TEXT,
+        organization TEXT,
+        bio TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      );
+    `;
+    database.exec(createUserProfiles);
+
+    // ✅ 채팅 테이블 (유니크 쌍 제약 추가)
     const createChatTables = `
       CREATE TABLE IF NOT EXISTS chat_threads (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_a INTEGER NOT NULL,
         user_b INTEGER NOT NULL,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(user_a, user_b)
       );
       CREATE INDEX IF NOT EXISTS idx_chat_threads_pair ON chat_threads(user_a, user_b);
 
@@ -226,7 +243,7 @@ const userQueries = {
 
 // 게시판 쿼리
 const boardQueries = {
-  // 새 게시글 생성 (서버 현재 시간으로 저장)
+  // 새 게시글 생성
   createPost: (title, content, userId) => {
     const db = getDatabase();
     const now = new Date().toISOString();
@@ -234,7 +251,7 @@ const boardQueries = {
     return stmt.run(title, content, userId, now);
   },
 
-  // 모든 게시글 목록 조회 (최신순) — 표시 이름은 서버에서 결정
+  // ✅ 모든 게시글 목록 (author_id 포함)
   getAllPosts: () => {
     const db = getDatabase();
     const stmt = db.prepare(`
@@ -242,6 +259,7 @@ const boardQueries = {
             p.id, 
             p.title, 
             p.created_at,
+            u.id AS author_id,
             CASE WHEN u.show_nickname = 1 THEN u.nickname ELSE u.name END AS author
         FROM posts p
         JOIN users u ON p.user_id = u.id
@@ -268,7 +286,7 @@ const boardQueries = {
     return stmt.get(id);
   },
 
-  // 특정 게시글의 댓글 목록 조회(익명 X, 표시 이름으로 반환)
+  // 댓글 목록
   getCommentsByPostId: (postId) => {
     const db = getDatabase();
     const stmt = db.prepare(`
@@ -287,7 +305,7 @@ const boardQueries = {
     return stmt.all(postId);
   },
 
-  // 새 댓글 추가 (서버 현재 시간으로 저장)
+  // 새 댓글 추가
   createComment: (postId, userId, content) => {
     const db = getDatabase();
     const now = new Date().toISOString();
@@ -298,7 +316,7 @@ const boardQueries = {
   },
 };
 
-// 채팅 쿼리 (1:1) — 변경 없음
+// 채팅 쿼리 (1:1)
 const chatQueries = {
   _pair: (a, b) => {
     const aNum = Number(a), bNum = Number(b);
@@ -309,6 +327,7 @@ const chatQueries = {
     const db = getDatabase();
     const [a, b] = chatQueries._pair(me, peer);
 
+    // 먼저 존재 확인
     const findStmt = db.prepare(`
       SELECT id FROM chat_threads 
       WHERE (user_a = ? AND user_b = ?) OR (user_a = ? AND user_b = ?)
@@ -317,6 +336,7 @@ const chatQueries = {
     const found = findStmt.get(a, b, a, b);
     if (found && found.id) return found.id;
 
+    // 없으면 생성 (UNIQUE(user_a,user_b) 보장)
     const ins = db.prepare(`
       INSERT INTO chat_threads (user_a, user_b) VALUES (?, ?)
     `);

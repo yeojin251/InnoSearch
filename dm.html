@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>1:1 채팅 · InnoSearch</title>
+  <link rel="stylesheet" href="./css/styles.css" />
+  <style>
+    .dm-wrap{ max-width:900px; margin:24px auto; }
+    #dm-log{ height:420px; overflow:auto; border:1px solid #e5e7eb; border-radius:12px; padding:12px; background:#fff; }
+    .dm-line{ margin:6px 0; }
+    .dm-mine{ text-align:right; }
+    #dm-form{ margin-top:8px; display:flex; gap:8px; }
+    #dm-input{ flex:1; }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand" href="./home.html">
+        <span class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24"><path d="M12 2l8.66 5v10L12 22l-8.66-5V7z" fill="currentColor" opacity=".12" /><path d="M12 6l6.06 3.5v7L12 20l-6.06-3.5v-7z" fill="currentColor" /></svg></span>
+        <span class="brand-text">InnoSearch</span>
+      </a>
+      <nav class="menu" aria-label="주요 메뉴">
+        <a href="./matching.html">기술/분야</a>
+        <a href="./goodex.html">우수사례</a>
+        <a href="./organ.html">창업시설</a>
+        <a href="./board.html">게시판</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="dm-wrap">
+    <h2>1:1 채팅</h2>
+    <div id="dm-log"></div>
+    <form id="dm-form">
+      <input id="dm-input" placeholder="메시지를 입력하세요" autocomplete="off" />
+      <button type="submit" class="btn primary">전송</button>
+    </form>
+  </main>
+
+  <script src="./js/apiClient.js"></script>
+  <script src="./js/session.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="./js/dm.js"></script>
+</body>
+</html>

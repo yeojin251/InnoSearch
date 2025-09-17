@@ -34,7 +34,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       tr.innerHTML = `
         <td class="col-no">${post.id}</td>
         <td class="col-title">${escapeHTML(post.title)}</td>
-        <td class="col-author">${escapeHTML(post.author || '')}</td>
+        <td class="col-author">
+          <a href="#" class="profile-link" data-user-id="${post.author_id}" onclick="event.stopPropagation()">
+            ${escapeHTML(post.author || '')}
+          </a>
+        </td>
         <td class="col-date">${new Date(post.created_at).toLocaleString("ko-KR", { timeZone: "Asia/Seoul" })}</td>
       `;
       tr.addEventListener('click', () => {
@@ -79,6 +83,15 @@ document.addEventListener('DOMContentLoaded', async () => {
       return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[match];
     });
   }
+
+  // 작성자 이름 클릭 → 프로필 팝업
+  postListBody.addEventListener('click', (e) => {
+    const a = e.target.closest('.profile-link');
+    if (!a) return;
+    e.preventDefault();
+    const uid = a.getAttribute('data-user-id');
+    if (uid) window.openProfileModal(Number(uid));
+  });
 
   await loadPosts();
 });

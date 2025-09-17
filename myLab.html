@@ -14,62 +14,91 @@
   <link rel="stylesheet" href="./css/mem_styles.css" />
 
   <style>
-    /* ===== 마이페이지 보조 스타일 ===== */
-    .mp-hero{ text-align:center; }
-    .mp-hero .container{
-      width: min(1100px, 92%);
-      display:flex; flex-direction:column; align-items:center; justify-content:center;
-      gap: 6px;
-    }
-    .mp-hero h1{ margin:0; letter-spacing:-.2px; font-size: clamp(24px, 3.6vw, 34px); font-weight: 800; }
-    .mp-hero .sub{ margin:0; }
-
-    .overview-card{
-      width: min(1100px, 92%);
-      margin: 0 auto;
-      background: linear-gradient(180deg, rgba(19,27,66,.88), rgba(16,22,54,.88));
-      border: 1px solid rgba(255,255,255,.22);
-      border-radius: 16px;
-      box-shadow: 0 16px 36px rgba(2,6,23,.25);
-      padding: 18px;
-      display: grid;
-      grid-template-columns: auto 1fr auto;
-      gap: 18px; align-items: center; backdrop-filter: blur(6px);
-    }
-
-    .avatar{ width:72px; height:72px; border-radius:999px; background: radial-gradient(circle at 30% 30%, #ffffffaa, transparent 60%), #ffffff12; border:1px solid #ffffff30; box-shadow: inset 0 8px 20px #00000055; }
-    .ov-main h1{ margin:2px 0 4px; font-size: clamp(20px, 2.6vw, 26px); }
-    .mini{ color:#cbd5e1; font-size:13px; }
-
-    .quick-stats{ display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; margin-top: 12px; }
-    .stat{ background: var(--card); border:1px solid #ffffff14; border-radius: 12px; padding: 12px; text-align:center; }
-    .stat .num{ font-size: 22px; font-weight:700; }
-    .stat .lab{ color:#9aa4b2; font-size:13px; }
-
-    .pref-card{
-      width:min(1100px,92%); margin:16px auto 0; background:var(--card);
-      border:1px solid #e5e7eb22; border-radius:12px; padding:16px;
-    }
-    .pref-row{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
-    .pref-row label{ font-weight:600; }
-    .pref-row input[type="text"]{ width:260px; }
-    .hint{ font-size:12px; color:#9aa4b2; }
-
-    @media (max-width: 900px){ .overview-card{ grid-template-columns:auto 1fr; } }
-    @media (max-width: 560px){
-      .overview-card{ grid-template-columns:1fr; text-align:center; }
-      .ov-main{ display:flex; flex-direction:column; align-items:center; }
-      .quick-stats{ grid-template-columns: 1fr 1fr; }
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: #0f172a;
     }
 
     .auth-page{ min-height:100vh; display:flex; flex-direction:column; }
     .auth-page main{ flex:1 0 auto; }
     .auth-page .site-footer{ margin-top:auto; }
+
+    .mp-hero{ text-align:center; }
+    .mp-hero .container{
+      width: min(1100px, 92%);
+      display:flex; flex-direction:column; align-items:center; gap: 6px;
+    }
+    .mp-hero h1{ margin:0; letter-spacing:-.2px; font-size: clamp(24px, 3.6vw, 34px); font-weight: 800; }
+    .mp-hero .sub{ margin:0; color:#475569; }
+
+    .overview-card{
+      width: min(1100px, 92%);
+      margin: 0 auto;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 20px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+      padding: 18px;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 18px; align-items: center;
+    }
+
+    .avatar{ width:72px; height:72px; border-radius: 50%; background: linear-gradient(135deg,#dbeafe,#93c5fd); display:inline-block; box-shadow: inset 0 4px 12px rgba(0,0,0,0.12); }
+    .ov-main h1{ margin:2px 0 4px; font-size: clamp(20px, 2.6vw, 26px); }
+    .mini{ color:#64748b; font-size:13px; }
+    .btn-row{ display:flex; gap:8px; align-items:center; }
+
+    .btn { border-radius: 12px; font-weight:600; padding:8px 12px; border:1px solid #e2e8f0; background:#f8fafc; cursor:pointer; }
+    .btn:hover{ background:#eef2ff; border-color:#c7d2fe; }
+    .btn.primary { background:#6366f1; color:#fff; border-color:#6366f1; box-shadow:0 4px 12px rgba(99,102,241,0.25); }
+    .btn.primary:hover { background:#4f46e5; border-color:#4f46e5; }
+
+    #btn-edit-profile {
+      background: #6366f1;
+      color: #ffffff;
+      border: none;
+      font-weight: 600;
+      transition: background 0.2s ease;
+    }
+    #btn-edit-profile:hover { background: #4f46e5; }
+
+    .dm-card{
+      width:min(1100px,92%); margin:16px auto; background:#fff;
+      border:1px solid #e2e8f0; border-radius:20px; padding:12px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+    }
+    .dm-item{ padding:10px 8px; border-bottom:1px solid #e2e8f0; cursor:pointer; }
+    .dm-item:last-child{ border-bottom:none; }
+    .dm-item .title{ font-weight:700; color:#0f172a; }
+    .dm-item .mini{ color:#94a3b8; font-size:12px; }
+
+    .overlay{ position:fixed; inset:0; background:rgba(2,6,23,.55); display:none; align-items:center; justify-content:center; z-index:1000; }
+    .panel{
+      width:min(760px,92%); background:#fff; border-radius:20px; border:1px solid #e2e8f0;
+      box-shadow:0 20px 60px rgba(2,6,23,.35); padding:24px; font-size:15px;
+    }
+    .panel header{ display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+    .panel h3{ margin:0; font-weight:800; font-size:18px; color:#0f172a; }
+    .panel .grid{ display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+    .panel .grid > div { display:flex; flex-direction:column; gap:6px; }
+    .panel label{ font-weight:700; color:#111827; }
+    .panel input, .panel textarea {
+      border:1px solid #cbd5e1; border-radius:12px; padding:10px; font-size:15px; color:#0f172a; background:#fff;
+      font-family: inherit; font-weight: 500;
+    }
+    .panel input::placeholder, .panel textarea::placeholder{ font-family: inherit; color:#94a3b8; }
+    .panel input:focus, .panel textarea:focus { outline:none; border-color:#6366f1; box-shadow:0 0 0 3px rgba(99,102,241,0.2); }
+    .panel textarea{ min-height:110px; border-radius:14px; }
+    .panel .row{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:10px; }
+    .panel .footer{ display:flex; gap:8px; justify-content:flex-end; margin-top:16px; }
+
+    @media (max-width: 720px){ .panel .grid{ grid-template-columns: 1fr; } .overview-card{ grid-template-columns:auto 1fr; } }
   </style>
 </head>
 
 <body class="auth-page">
-  <!-- 상단 고정 네비게이션 -->
+  <!-- 상단 네비 -->
   <header class="site-header">
     <div class="container nav">
       <a class="brand" href="./home.html" aria-label="홈으로">
@@ -81,22 +110,29 @@
         </span>
         <span class="brand-text">InnoSearch</span>
       </a>
-
       <nav class="menu" aria-label="주요 메뉴">
         <a href="./matching.html">기술/분야</a>
         <a href="./goodex.html">우수사례</a>
         <a href="./organ.html">창업시설</a>
         <a href="./board.html">게시판</a>
       </nav>
+      <!-- ✅ nav-actions 복구: 세션 스크립트가 이 ID들로 표시/숨김 처리 -->
+      <div class="nav-actions">
+        <a class="link" id="btn-login" href="./login.html">로그인</a>
+        <a class="btn primary" id="btn-signup" href="./signup.html">회원가입</a>
+        <a class="link" id="btn-mypage" href="./myLab.html" style="display:none;">마이페이지</a>
+        <a class="link" id="btn-logout" href="#" style="display:none;">로그아웃</a>
+      </div>
+      <!-- ✅ 끝 -->
     </div>
   </header>
 
   <main>
-    <!-- 마이페이지 히어로 -->
+    <!-- 히어로 -->
     <section class="auth-hero mp-hero">
       <div class="container">
-        <h1>마이페이지</h1>
-        <p class="sub">내 활동 현황을 한 곳에서 확인하세요.</p>
+        <h1 id="page-title">마이페이지</h1>
+        <p class="sub" id="page-sub">내 활동과 프로필을 관리합니다.</p>
       </div>
     </section>
 
@@ -106,47 +142,85 @@
         <div class="avatar" aria-hidden="true"></div>
 
         <div class="ov-main">
-          <h1 id="user-name">로그인 중... <span class="mini" id="user-org">소속/기관: -</span></h1>
+          <h1 id="ov-name">-</h1>
+          <div class="mini" id="ov-org">소속/기관: -</div>
+          <div class="mini" id="ov-display-mode" style="margin-top:4px;">표시 방식: -</div>
+        </div>
 
-          <div class="quick-stats" aria-label="요약 통계">
-            <div class="stat"><div class="num">0</div><div class="lab">저장한 리포트</div></div>
-            <div class="stat"><div class="num">0</div><div class="lab">매칭 요청</div></div>
-            <div class="stat"><div class="num">0</div><div class="lab">알림</div></div>
-          </div>
+        <div class="btn-row" id="action-slot">
+          <button id="btn-edit-profile" class="btn">프로필 편집</button>
         </div>
       </div>
     </section>
 
-    <!-- ▼ 추가: 닉네임/표시 설정 카드 -->
-    <section class="auth-body" style="padding-top: 0;">
-      <div class="pref-card">
-        <div class="pref-row" style="margin-bottom:8px;">
-          <label for="myp-nickname">닉네임</label>
-          <input id="myp-nickname" type="text" disabled>
-          <span class="hint">닉네임은 최초 설정 후 변경할 수 없습니다.</span>
-        </div>
-        <div class="pref-row">
-          <label class="checkbox" for="myp-show-nickname">
-            <input id="myp-show-nickname" type="checkbox">
-            <span>게시글/댓글에 <strong>닉네임</strong>으로 표시</span>
-          </label>
-          <button id="myp-save" class="btn" style="margin-left:auto;">저장</button>
+    <!-- 타인 보기 모드 -->
+    <section id="view-only" class="auth-body" style="padding-top:0; display:none;">
+      <div class="dm-card">
+        <div><b>직업/역할:</b> <span id="v-job">-</span></div>
+        <div><b>관심분야:</b> <span id="v-interests">-</span></div>
+        <div style="margin-top:8px;"><b>소개:</b></div>
+        <div id="v-bio" style="white-space:pre-wrap; margin-top:4px;"></div>
+        <div class="btn-row" style="margin-top:12px;">
+          <button id="btn-open-dm" class="btn primary">채팅하기</button>
         </div>
       </div>
     </section>
-    <!-- ▲ 추가 끝 -->
 
-    <!-- 회원 탈퇴 -->
-    <section class="auth-body" style="padding-top: 0;">
-      <div class="container" style="text-align: right;">
-        <button id="deleteAccountBtn" class="btn" style="background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 14px;">
-          회원 탈퇴
-        </button>
+    <!-- 내 DM 목록 -->
+    <section id="dm-section" class="auth-body" style="padding-top: 0; display:none;">
+      <div class="dm-card">
+        <h3 style="margin:6px 0 12px;">내 채팅</h3>
+        <div id="dm-list">불러오는 중...</div>
       </div>
     </section>
   </main>
 
-  <!-- 하단 푸터 -->
+  <!-- 편집 오버레이 -->
+  <div id="edit-overlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="edit-title">
+    <div class="panel">
+      <header>
+        <h3 id="edit-title">프로필 편집</h3>
+        <button id="btn-close-panel" class="btn">닫기</button>
+      </header>
+
+      <div class="row">
+        <label class="checkbox" for="f-show-nick">
+          <input id="f-show-nick" type="checkbox">
+          <span>게시판/댓글에 <b>닉네임</b>으로 표시</span>
+        </label>
+        <span class="mini" id="nick-hint"></span>
+      </div>
+
+      <div class="grid">
+        <div>
+          <label for="f-display">공개 표시 이름</label>
+          <input id="f-display" type="text" placeholder="예: 홍길동 / 길동이">
+          <div class="mini">비워두면 닉네임/이름이 자동으로 표시됩니다.</div>
+        </div>
+        <div>
+          <label for="f-org">소속/기관</label>
+          <input id="f-org" type="text" placeholder="회사/학교/센터 등">
+        </div>
+        <div>
+          <label for="f-job">직업/역할</label>
+          <input id="f-job" type="text" placeholder="예: 기획자, 개발자, 연구원">
+        </div>
+        <div>
+          <label for="f-interests">관심분야(콤마로 구분)</label>
+          <input id="f-interests" type="text" placeholder="AI, 제조, 바이오, 로봇">
+        </div>
+        <div style="grid-column: 1 / -1;">
+          <label for="f-bio">소개/인삿말</label>
+          <textarea id="f-bio" placeholder="협업하고 싶은 분야나 기술 스택, 진행 중인 아이디어, 자기소개 등 자유롭게 적어주세요."></textarea>
+        </div>
+      </div>
+
+      <div class="footer">
+        <button id="btn-save-all" class="btn primary">저장</button>
+      </div>
+    </div>
+  </div>
+
   <footer class="site-footer">
     <div class="container foot">
       <div class="brand lite">
@@ -166,71 +240,175 @@
     </div>
   </footer>
 
+  <!-- 필수 스크립트 -->
   <script src="./js/apiClient.js"></script>
   <script src="./js/session.js"></script>
+  <!-- ✅ Socket.IO & 모달 스크립트 추가 -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="./js/profileModal.js"></script>
+  <script src="./js/chatModal.js"></script>
+  <!-- 페이지 스크립트 -->
   <script>
-    // 마이페이지 유저 정보 로딩
+    function esc(s){ return typeof s==='string' ? s.replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;', "'":'&#39;' }[m])) : ''; }
+    const qs = (sel) => document.querySelector(sel);
+
     document.addEventListener('DOMContentLoaded', async () => {
-      try {
-        const response = await window.apiClient.get('/me');
-        if (response.success) {
-          const user = response.user;
-          const userNameElement = document.getElementById('user-name');
-          if (userNameElement) {
-            userNameElement.innerHTML =
-              `${user.name} <span class="mini" id="user-org">소속/기관: ${user.organization || '미입력'}</span>`;
+      const params = new URLSearchParams(location.search);
+      const viewUserId = params.get('user'); // 있으면 타인보기
+      const loggedIn = await window.sessionManager.checkAuthStatus();
+
+      const ovName = qs('#ov-name');
+      const ovOrg  = qs('#ov-org');
+      const ovMode = qs('#ov-display-mode');
+
+      const overlay = qs('#edit-overlay');
+      const btnOpen = qs('#btn-edit-profile');
+      const btnClose= qs('#btn-close-panel');
+      const btnSave = qs('#btn-save-all');
+
+      const fShowNick = qs('#f-show-nick');
+      const nickHint  = qs('#nick-hint');
+      const fDisplay  = qs('#f-display');
+      const fOrg      = qs('#f-org');
+      const fJob      = qs('#f-job');
+      const fInter    = qs('#f-interests');
+      const fBio      = qs('#f-bio');
+
+      const viewOnlySec = qs('#view-only');
+      const vJob  = qs('#v-job');
+      const vInt  = qs('#v-interests');
+      const vBio  = qs('#v-bio');
+
+      const dmSec = qs('#dm-section');
+      const dmList = qs('#dm-list');
+      const btnOpenDM = qs('#btn-open-dm');
+
+      /* ===== 타인 보기 모드 ===== */
+      if (viewUserId) {
+        qs('#page-title').textContent = '프로필';
+        qs('#page-sub').textContent = '협업 파트너를 찾아보세요.';
+        viewOnlySec.style.display = '';
+        dmSec.style.display = 'none';
+        btnOpen.style.display = 'none';
+
+        try {
+          const r = await window.apiClient.get(`/users/${Number(viewUserId)}/profile`);
+          if (!r?.success) throw new Error('프로필 로드 실패');
+          const p = r.profile;
+
+          ovName.textContent = p.display_name || '사용자';
+          ovOrg.textContent  = `소속/기관: ${p.organization || '-'}`;
+          ovMode.textContent = '표시 방식: —';
+
+          vJob.textContent = p.job_title || '-';
+          vInt.textContent = p.interests || '-';
+          vBio.innerHTML   = esc(p.bio || '').replace(/\n/g,'<br>');
+
+          if (btnOpenDM) {
+            // ✅ dm.html로 이동하지 말고 모달로 열기
+            btnOpenDM.onclick = async () => {
+              if (!loggedIn) { alert('로그인이 필요합니다.'); location.href = '/login.html'; return; }
+              window.openChatModalWith(Number(viewUserId));
+            };
           }
-
-          // 닉네임/표시여부 UI 바인딩
-          const nickEl = document.getElementById('myp-nickname');
-          const showEl = document.getElementById('myp-show-nickname');
-          if (nickEl) nickEl.value = user.nickname || '';
-          if (showEl) showEl.checked = !!user.show_nickname;
-
-        } else {
-          // 미로그인 → 로그인 페이지로
-          window.location.href = '/login';
+        } catch (e) {
+          console.error(e);
+          alert('프로필을 불러올 수 없습니다.');
+          history.back();
         }
-      } catch (error) {
-        console.error('사용자 정보 로드 오류:', error);
-        window.location.href = '/login';
+        return;
       }
-    });
 
-    // 표시여부 저장
-    document.getElementById('myp-save').addEventListener('click', async () => {
+      /* ===== 내 마이페이지 ===== */
+      viewOnlySec.style.display = 'none';
+      dmSec.style.display = '';
+
+      if (!loggedIn) { location.href = '/login.html'; return; }
+
+      const me = window.sessionManager.getCurrentUser();
+      ovName.textContent = me?.name || '-';
+      ovOrg.textContent  = `소속/기관: ${me?.organization || '-'}`;
+      ovMode.textContent = `표시 방식: ${me?.show_nickname ? '닉네임' : '이름'}`;
+
       try {
-        const show_nickname = document.getElementById('myp-show-nickname').checked;
-        const res = await window.apiClient.request('/me/profile', {
-          method: 'PATCH',
-          body: JSON.stringify({ show_nickname })
-        });
-        if (res.success) {
-          alert('저장되었습니다.');
-        } else {
-          alert(res.message || '저장 실패');
+        const r = await window.apiClient.get('/me/profile-full');
+        if (r?.success) {
+          const p = r.profile || {};
+          fDisplay.value = p.display_name || '';
+          fOrg.value     = p.organization || '';
+          fJob.value     = p.job_title || '';
+          fInter.value   = p.interests || '';
+          fBio.value     = p.bio || '';
         }
-      } catch (e) {
+      } catch(e){ console.error(e); }
+
+      try {
+        const meRes = await window.apiClient.get('/me');
+        if (meRes?.success && meRes.user) {
+          fShowNick.checked = !!meRes.user.show_nickname;
+          nickHint.textContent = `현재 닉네임: ${meRes.user.nickname || '-'}`;
+          ovMode.textContent = `표시 방식: ${meRes.user.show_nickname ? '닉네임' : '이름'}`;
+        }
+      } catch(e){ console.error(e); }
+
+      try {
+        const rr = await window.apiClient.get('/dm/list');
+        if (rr?.success) {
+          if (!rr.threads || rr.threads.length === 0) {
+            dmList.textContent = '채팅방이 없습니다.';
+          } else {
+            dmList.innerHTML = rr.threads.map(t => `
+              <div class="dm-item" onclick="window.openChatModalWith(${t.peer_id})">
+                <div class="title">${esc(t.peer_name || '사용자')}</div>
+                <div class="mini">${esc(t.last_message || '(메시지 없음)')}</div>
+                <div class="mini">${t.last_at ? new Date(t.last_at).toLocaleString('ko-KR', { timeZone:'Asia/Seoul' }) : ''}</div>
+              </div>
+            `).join('');
+          }
+        } else {
+          dmList.textContent = '채팅 목록을 불러올 수 없습니다.';
+        }
+      } catch(e){
         console.error(e);
-        alert('저장 중 오류가 발생했습니다.');
+        dmList.textContent = '채팅 목록을 불러오는 중 오류가 발생했습니다.';
       }
-    });
 
-    // 회원 탈퇴
-    document.getElementById('deleteAccountBtn').addEventListener('click', async () => {
-      if (!confirm('정말로 회원 탈퇴 하시겠습니까?\n탈퇴 후에는 모든 데이터가 삭제되며 복구할 수 없습니다.')) return;
-      if (!confirm('최종 확인입니다. 정말 탈퇴하시겠습니까?')) return;
+      // 패널 열고/닫기/저장
+      const openPanel  = () => overlay.style.display = 'flex';
+      const closePanel = () => overlay.style.display = 'none';
+      btnOpen.addEventListener('click', openPanel);
+      btnClose.addEventListener('click', closePanel);
+      overlay.addEventListener('click', (e)=> { if (e.target === overlay) closePanel(); });
 
-      try {
-        const response = await window.apiClient.delete('/account');
-        if (response.success) {
-          alert('회원 탈퇴가 완료되었습니다.');
-          window.location.href = '/home';
+      btnSave.addEventListener('click', async () => {
+        try {
+          const payload = {
+            display_name: fDisplay.value || null,
+            organization: fOrg.value || null,
+            job_title:    fJob.value || null,
+            interests:    fInter.value || null,
+            bio:          fBio.value || null
+          };
+          // 프로필 저장
+          const r1 = await window.apiClient.put('/me/profile-full', payload);
+          if (!r1?.success) throw new Error('프로필 저장 실패');
+
+          // 표시여부 저장
+          const r2 = await window.apiClient.request('/me/profile', {
+            method: 'PATCH',
+            body: JSON.stringify({ show_nickname: !!fShowNick.checked })
+          });
+          if (!r2?.success) throw new Error('표시 설정 저장 실패');
+
+          ovOrg.textContent  = `소속/기관: ${payload.organization || me?.organization || '-'}`;
+          ovMode.textContent = `표시 방식: ${fShowNick.checked ? '닉네임' : '이름'}`;
+          alert('저장되었습니다.');
+          closePanel();
+        } catch (e) {
+          console.error(e);
+          alert('저장 중 오류가 발생했습니다.');
         }
-      } catch (error) {
-        console.error('회원 탈퇴 오류:', error);
-        alert('회원 탈퇴 중 오류가 발생했습니다.');
-      }
+      });
     });
   </script>
 </body>

@@ -32,13 +32,11 @@
     </header>
 
     <main class="board-main">
-        <div class="container" id="post-container">
-            </div>
+        <div class="container" id="post-container"></div>
 
         <div class="container" id="comments-section">
             <h4>댓글</h4>
-            <div id="comment-list">
-                </div>
+            <div id="comment-list"></div>
             <form id="comment-form">
                 <textarea id="comment-content" placeholder="댓글을 입력하세요" required></textarea>
                 <button type="submit" class="btn primary">댓글 등록</button>
@@ -60,6 +58,9 @@
 
     <script src="./js/apiClient.js"></script>
     <script src="./js/session.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="./js/profileModal.js"></script>
+    <script src="./js/chatModal.js"></script>
     <script src="./js/post-detail.js"></script>
 </body>
 </html>

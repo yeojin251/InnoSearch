@@ -33,7 +33,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     const contentEl = postContainer.querySelector('#post-content');
 
     titleEl.textContent   = post.title ?? '(제목 없음)';
-    metaEl.textContent    = `${post.author || ''} · ${new Date(post.created_at).toLocaleString("ko-KR", { timeZone: "Asia/Seoul" })}`;
+    const when = new Date(post.created_at).toLocaleString("ko-KR", { timeZone: "Asia/Seoul" });
+    metaEl.innerHTML = `
+      <a class="profile-link" href="#" data-user-id="${post.user_id}">${escapeHTML(post.author || '')}</a>
+      · ${when}
+    `;
     contentEl.textContent = post.content || '';
   }
 
@@ -67,7 +71,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       commentsWrap.innerHTML = list.map(c => `
         <div class="comment-item">
           <div class="comment-head">
-            <span class="comment-author">${escapeHTML(c.display_name || '')}</span>
+            <a class="comment-author profile-link" href="#" data-user-id="${c.user_id}">
+              ${escapeHTML(c.display_name || '')}
+            </a>
             <span class="comment-date">${new Date(c.created_at).toLocaleString("ko-KR", { timeZone: "Asia/Seoul" })}</span>
           </div>
           <div class="comment-body">${escapeHTML(c.content)}</div>
@@ -112,4 +118,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     });
   }
+
+  // 프로필 모달 열기 (이벤트 위임)
+  document.addEventListener('click', (e)=>{
+    const a = e.target.closest('.profile-link');
+    if (!a) return;
+    e.preventDefault();
+    const uid = a.getAttribute('data-user-id');
+    if (uid) window.openProfileModal(Number(uid));
+  });
 });
