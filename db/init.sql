@@ -7,6 +7,8 @@ CREATE TABLE IF NOT EXISTS users (
   email TEXT UNIQUE NOT NULL,
   password_hash TEXT NOT NULL,
   organization TEXT,
+  nickname TEXT UNIQUE NOT NULL,              -- 새로 추가: 닉네임
+  show_nickname INTEGER NOT NULL DEFAULT 1,   -- 새로 추가: 닉네임 표시 여부 (1=닉네임, 0=이름)
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
@@ -14,6 +16,7 @@ CREATE TABLE IF NOT EXISTS users (
 -- 인덱스 생성
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE INDEX IF NOT EXISTS idx_users_created_at ON users(created_at);
+CREATE INDEX IF NOT EXISTS idx_users_nickname ON users(nickname);
 
 -- 사용자 활동 테이블 (향후 확장용)
 CREATE TABLE IF NOT EXISTS user_activities (

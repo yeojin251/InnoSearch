@@ -16,38 +16,35 @@ class SignupForm {
   // 폼 제출 처리
   async handleSubmit(e) {
     e.preventDefault();
-    
+
     const submitBtn = this.form.querySelector('button[type="submit"]');
     const originalText = submitBtn.textContent;
-    
+
     try {
       // 버튼 비활성화
       submitBtn.disabled = true;
       submitBtn.textContent = '처리 중...';
-      
+
       // 폼 데이터 수집
       const formData = this.getFormData();
-      console.log('전송할 데이터:', formData); // 디버깅용
-      
+
       // 유효성 검사
       const validation = this.validateForm(formData);
       if (!validation.isValid) {
         this.showErrors(validation.errors);
         return;
       }
-      
+
       // API 호출
       const response = await window.apiClient.post('/signup', formData);
-      
+
       if (response.success) {
         this.showSuccess('회원가입이 완료되었습니다!');
-        
-        // 2초 후 로그인 페이지로 이동
         setTimeout(() => {
           window.location.href = '/login';
-        }, 2000);
+        }, 1200);
       }
-      
+
     } catch (error) {
       console.error('회원가입 오류:', error);
       this.showError(error.message || '회원가입 중 오류가 발생했습니다.');
@@ -60,14 +57,19 @@ class SignupForm {
 
   // 폼 데이터 수집
   getFormData() {
-    const formData = new FormData(this.form);
-    const orgValue = formData.get('org');
-    console.log('원본 org 값:', orgValue); // 디버깅용
+    const fd = new FormData(this.form);
+    const orgValue = fd.get('org');
+
+    // 체크박스는 체크 시 문자열 "on", 미체크 시 null 이므로 !!로 boolean 변환
+    const showNick = !!fd.get('show_nickname');
+
     return {
-      name: formData.get('name') || '',
-      email: formData.get('email') || '',
-      password: formData.get('password') || '',
-      password2: formData.get('password2') || '',
+      name: (fd.get('name') || '').trim(),
+      nickname: (fd.get('nickname') || '').trim(),
+      show_nickname: showNick,
+      email: (fd.get('email') || '').trim(),
+      password: fd.get('password') || '',
+      password2: fd.get('password2') || '',
       organization: orgValue ? orgValue.trim() : ''
     };
   }
@@ -75,33 +77,21 @@ class SignupForm {
   // 클라이언트 측 유효성 검사
   validateForm(data) {
     const errors = [];
-    
-    // 이름 검사
-    if (!data.name.trim()) {
-      errors.push('이름을 입력해주세요.');
-    } else if (data.name.trim().length < 2) {
-      errors.push('이름은 최소 2자 이상이어야 합니다.');
-    }
-    
-    // 이메일 검사
-    if (!data.email.trim()) {
-      errors.push('이메일을 입력해주세요.');
-    } else if (!this.isValidEmail(data.email)) {
-      errors.push('올바른 이메일 형식을 입력해주세요.');
-    }
-    
-    // 비밀번호 검사
-    if (!data.password) {
-      errors.push('비밀번호를 입력해주세요.');
-    } else if (data.password.length < 8) {
-      errors.push('비밀번호는 최소 8자 이상이어야 합니다.');
-    }
-    
-    // 비밀번호 확인 검사
-    if (data.password !== data.password2) {
-      errors.push('비밀번호가 일치하지 않습니다.');
-    }
-    
+
+    if (!data.name) errors.push('이름을 입력해주세요.');
+    else if (data.name.length < 2) errors.push('이름은 최소 2자 이상이어야 합니다.');
+
+    if (!data.nickname) errors.push('닉네임을 입력해주세요.');
+    else if (data.nickname.length < 2) errors.push('닉네임은 최소 2자 이상이어야 합니다.');
+
+    if (!data.email) errors.push('이메일을 입력해주세요.');
+    else if (!this.isValidEmail(data.email)) errors.push('올바른 이메일 형식을 입력해주세요.');
+
+    if (!data.password) errors.push('비밀번호를 입력해주세요.');
+    else if (data.password.length < 8) errors.push('비밀번호는 최소 8자 이상이어야 합니다.');
+
+    if (data.password !== data.password2) errors.push('비밀번호가 일치하지 않습니다.');
+
     return {
       isValid: errors.length === 0,
       errors
@@ -118,7 +108,7 @@ class SignupForm {
   setupValidation() {
     const password = this.form.querySelector('input[name="password"]');
     const password2 = this.form.querySelector('input[name="password2"]');
-    
+
     if (password2) {
       password2.addEventListener('input', () => {
         if (password.value !== password2.value) {

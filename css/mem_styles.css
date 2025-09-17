@@ -190,3 +190,60 @@ body{ background:#fff; color:var(--text); }
 .message p:not(:last-child) {
   margin-bottom: 4px;
 }
+
+
+
+/* 체크박스 & 라벨 한 줄 정렬 */
+.checkbox-line {
+  display: inline-flex;          /* 한 줄 */
+  align-items: center;           /* 수직 중앙정렬 */
+  gap: 8px;                      /* 체크박스-문장 사이 간격 */
+  white-space: nowrap;           /* 줄바꿈 방지 */
+}
+
+/* 텍스트 줄바꿈 방지 보조(필요 시) */
+.checkbox-line span {
+  white-space: nowrap;
+}
+
+/* 더 작은 체크박스 (텍스트 크기와 비슷하게) */
+input.tiny-check[type="checkbox"] {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+
+  width: 1em !important;         /* 글자 크기 기준 */
+  height: 1em !important;
+
+  border: 1.5px solid #cfd6e4 !important;
+  border-radius: 0.25em !important;
+  background: #fff !important;
+
+  display: inline-block;
+  vertical-align: -0.2em;
+  position: relative;
+  cursor: pointer;
+  outline: none;
+  transition: border-color .15s, background-color .15s, box-shadow .15s;
+}
+
+input.tiny-check[type="checkbox"]:checked {
+  background: var(--brand, #4f46e5) !important;   /* 플랫폼 톤 */
+  border-color: var(--brand, #4f46e5) !important;
+}
+
+input.tiny-check[type="checkbox"]:checked::after {
+  content: "";
+  position: absolute;
+  left: 0.28em;
+  top: 0.04em;
+  width: 0.38em;
+  height: 0.65em;
+  border: 2px solid #fff;
+  border-top: 0;
+  border-left: 0;
+  transform: rotate(45deg);
+}
+
+input.tiny-check[type="checkbox"]:focus-visible {
+  box-shadow: 0 0 0 3px rgba(79,70,229,.25);
+}

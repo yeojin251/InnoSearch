@@ -8,10 +8,60 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./css/styles.css" />
-  <link rel="stylesheet" href="./css/mem_styles.css" />
+  <link rel="stylesheet" href="./css/mem_styles.css?v=3" />
+
+  <style>
+    /* 작고 깔끔한 체크박스 + 한 줄 정렬 */
+    .checkbox-line {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+    .checkbox-line span {
+      white-space: nowrap;
+    }
+
+    input.tiny-check[type="checkbox"] {
+      appearance: none !important;
+      -webkit-appearance: none !important;
+      width: 1em !important;
+      height: 1em !important;
+      border: 1.5px solid #cfd6e4 !important;
+      border-radius: 0.25em !important;
+      background: #fff !important;
+      display: inline-block;
+      vertical-align: -0.2em;
+      position: relative;
+      cursor: pointer;
+      outline: none;
+      transition: border-color .15s, background-color .15s, box-shadow .15s;
+    }
+
+    input.tiny-check[type="checkbox"]:checked {
+      background: var(--brand, #4f46e5) !important;
+      border-color: var(--brand, #4f46e5) !important;
+    }
+
+    input.tiny-check[type="checkbox"]:checked::after {
+      content: "";
+      position: absolute;
+      left: 0.7em;
+      top: 0.0em;
+      width: 0.38em;
+      height: 0.55em;
+      border: 2px solid #fff;
+      border-top: 0;
+      border-left: 0;
+      transform: rotate(45deg);
+    }
+
+    input.tiny-check[type="checkbox"]:focus-visible {
+      box-shadow: 0 0 0 3px rgba(79,70,229,.25);
+    }
+  </style>
 </head>
-<body>
-<body class="auth-page">    
+<body class="auth-page">
   <header class="site-header">
     <div class="container nav">
       <a class="brand" href="./home.html"><span class="logo">
@@ -34,6 +84,20 @@
           <div class="field">
             <label for="name">이름</label>
             <input id="name" name="name" type="text" placeholder="홍길동" required>
+          </div>
+
+          <!-- 닉네임 -->
+          <div class="field">
+            <label for="nickname">닉네임 <span class="muted small">(한 번 설정하면 변경 불가)</span></label>
+            <input id="nickname" name="nickname" type="text" placeholder="표시할 닉네임" required minlength="2" maxlength="24" autocomplete="off">
+          </div>
+
+          <!-- 닉네임 표시 여부 체크박스 -->
+          <div class="field inline">
+            <label class="checkbox-line" for="show_nickname">
+              <input id="show_nickname" name="show_nickname" type="checkbox" class="tiny-check" checked>
+              <span>게시글/댓글에 <strong>닉네임</strong>으로 표시</span>
+            </label>
           </div>
 
           <div class="field">
