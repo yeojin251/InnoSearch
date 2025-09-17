@@ -7,6 +7,7 @@ InnoSearch의 회원가입 및 로그인 기능이 구현된 웹 애플리케이
 ### 1. 의존성 설치
 ```bash
 npm install
+npm install socket.io
 ```
 
 ### 2. 환경 변수 설정
