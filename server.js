@@ -15,6 +15,7 @@ const eventsRoutes = require('./routes/events');
 const boardRoutes = require('./routes/board');
 const profileRoutes = require('./routes/profile');   // /api/me/profile-full, /api/users/:id/profile
 const dmRoutes = require('./routes/dm');             // DM REST API
+const chatRoutes = require('./routes/chatRoute');    // ⭐ 추가: ChatGPT 프록시 라우트
 
 const { initDatabase, chatQueries } = require('./db/db');
 
@@ -56,6 +57,7 @@ app.use('/api/events', eventsRoutes);
 app.use('/api/board', boardRoutes);
 app.use('/api', profileRoutes);
 app.use('/api/dm', dmRoutes);
+app.use('/api', chatRoutes); // ⭐ 추가: /api/chat 엔드포인트 활성화
 
 // ===== 정적 파일 서빙 =====
 app.use(express.static(path.join(__dirname)));

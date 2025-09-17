@@ -100,6 +100,25 @@
     </div>
   </footer>
 
+  <!-- AI 위젯 컨테이너 (빈 div만 두면 JS가 내부를 생성) -->
+<div id="ai-fab-root"></div>
+
+<!-- 페이지 컨텍스트(선택) — 상세페이지라면 기술명/ID/요약을 넣어주세요 -->
+<script>
+  window.__innosearch_context = {
+    page: 'tech-detail',         // 'home' | 'tech' | 'tech-detail'
+    techId: 'T-2025-00123',
+    techName: '친환경 포장재 복합소재',
+    techSummary: '폐플라스틱 재활용 기반 생분해성 복합소재 ...',
+    keywords: ['바이오플라스틱','친환경','패키징']
+  };
+</script>
+
+<!-- 위젯 스크립트 -->
+<script defer src="./js/aiWidget.js"></script>
+<link rel="stylesheet" href="./css/aiWidget.css">
+
+
   <script src="./js/apiClient.js"></script>
   <script src="./js/session.js"></script>
 
