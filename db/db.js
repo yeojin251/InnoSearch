@@ -1,3 +1,4 @@
+// db/db.js
 const Database = require('better-sqlite3');
 const path = require('path');
 
@@ -5,11 +6,16 @@ const DB_PATH = path.join(__dirname, 'innosearch.db');
 
 let db = null;
 
-// 데이터베이스 연결
+// ─────────────────────────────────────────────────────────────
+// DB 핸들러
+// ─────────────────────────────────────────────────────────────
 function getDatabase() {
   if (!db) {
     db = new Database(DB_PATH);
+    // 성능/일관성 옵션
     db.pragma('journal_mode = WAL');
+    db.pragma('foreign_keys = ON'); // FK 강제
+    db.pragma('synchronous = NORMAL');
   }
   return db;
 }
@@ -21,11 +27,13 @@ function hasColumn(table, col) {
   return info.some(c => c.name === col);
 }
 
-// DB 마이그레이션(컬럼 추가)
+// ─────────────────────────────────────────────────────────────
+// 마이그레이션: users
+// ─────────────────────────────────────────────────────────────
 function migrateUsersTable() {
   const database = getDatabase();
 
-  // users 테이블이 없으면 생성(닉네임 포함)
+  // users 테이블(최신 스키마)
   database.exec(`
     CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -40,33 +48,37 @@ function migrateUsersTable() {
     );
   `);
 
-  // 컬럼 누락 시 추가(구 DB 호환)
+  // 구 스키마 호환: 누락 컬럼 추가
   if (!hasColumn('users', 'nickname')) {
     database.exec(`ALTER TABLE users ADD COLUMN nickname TEXT UNIQUE;`);
-    // 기본 닉네임 채우기
-    const users = database.prepare(`SELECT id, name, email FROM users`).all();
-    const existsNick = new Set(
-      database.prepare(`SELECT nickname FROM users WHERE nickname IS NOT NULL`).all().map(r => r.nickname)
-    );
-    const up = database.prepare(`UPDATE users SET nickname = ? WHERE id = ?`);
-    const toNick = (name, email) => {
-      const base = (name && name.trim()) || (email.split('@')[0]);
-      let n = base || 'user';
-      let k = 1;
-      while (existsNick.has(n)) {
-        k += 1;
-        n = `${base}${k}`;
-      }
-      existsNick.add(n);
-      return n;
-    };
-    const tx = database.transaction(() => {
-      for (const u of users) {
-        const nk = toNick(u.name, u.email);
-        up.run(nk, u.id);
-      }
-    });
-    tx();
+    try {
+      const users = database.prepare(`SELECT id, name, email FROM users`).all();
+      const existsNick = new Set(
+        database.prepare(`SELECT nickname FROM users WHERE nickname IS NOT NULL`).all().map(r => r.nickname)
+      );
+      const up = database.prepare(`UPDATE users SET nickname = ? WHERE id = ?`);
+      const toNick = (name, email) => {
+        const baseRaw = (name && name.trim()) || (email && email.split('@')[0]) || 'user';
+        const base = baseRaw.replace(/\s+/g, '');
+        let n = base;
+        let k = 1;
+        while (existsNick.has(n)) {
+          k += 1;
+          n = `${base}${k}`;
+        }
+        existsNick.add(n);
+        return n;
+      };
+      const tx = database.transaction(() => {
+        for (const u of users) {
+          const nk = toNick(u.name, u.email);
+          up.run(nk, u.id);
+        }
+      });
+      tx();
+    } catch (e) {
+      console.warn('migrateUsersTable.nickname 채우기 경고:', e.message);
+    }
   }
 
   if (!hasColumn('users', 'show_nickname')) {
@@ -81,7 +93,9 @@ function migrateUsersTable() {
   `);
 }
 
-// 데이터베이스 초기화
+// ─────────────────────────────────────────────────────────────
+// 초기화(테이블 생성/인덱스 생성/샘플 데이터)
+// ─────────────────────────────────────────────────────────────
 async function initDatabase() {
   try {
     const database = getDatabase();
@@ -89,8 +103,8 @@ async function initDatabase() {
     // users 마이그레이션
     migrateUsersTable();
 
-    // 게시글/댓글 테이블
-    const createPostsTable = `
+    // 게시글/댓글
+    database.exec(`
       CREATE TABLE IF NOT EXISTS posts (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id INTEGER NOT NULL,
@@ -99,9 +113,8 @@ async function initDatabase() {
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-      )
-    `;
-    const createCommentsTable = `
+      );
+
       CREATE TABLE IF NOT EXISTS comments (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         post_id INTEGER NOT NULL,
@@ -110,12 +123,13 @@ async function initDatabase() {
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-      )
-    `;
-    database.exec(createPostsTable);
-    database.exec(createCommentsTable);
+      );
 
-    // (기존) 익명번호 매핑 테이블 호환
+      CREATE INDEX IF NOT EXISTS idx_posts_created ON posts(created_at);
+      CREATE INDEX IF NOT EXISTS idx_comments_post ON comments(post_id);
+    `);
+
+    // (구조 호환) 익명번호 매핑
     database.exec(`
       CREATE TABLE IF NOT EXISTS post_comment_alias (
         post_id INTEGER NOT NULL,
@@ -124,11 +138,11 @@ async function initDatabase() {
         PRIMARY KEY (post_id, user_id),
         FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-      )
+      );
     `);
 
-    // ✅ 사용자 공개 프로필 (없으면 생성)
-    const createUserProfiles = `
+    // 공개 프로필
+    database.exec(`
       CREATE TABLE IF NOT EXISTS user_profiles (
         user_id INTEGER PRIMARY KEY,
         display_name TEXT,
@@ -140,18 +154,19 @@ async function initDatabase() {
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
       );
-    `;
-    database.exec(createUserProfiles);
+    `);
 
-    // ✅ 채팅 테이블 (유니크 쌍 제약 추가)
-    const createChatTables = `
+    // 채팅(1:1)
+    database.exec(`
       CREATE TABLE IF NOT EXISTS chat_threads (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_a INTEGER NOT NULL,
         user_b INTEGER NOT NULL,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        UNIQUE(user_a, user_b)
+        UNIQUE(user_a, user_b),
+        FOREIGN KEY (user_a) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (user_b) REFERENCES users(id) ON DELETE CASCADE
       );
       CREATE INDEX IF NOT EXISTS idx_chat_threads_pair ON chat_threads(user_a, user_b);
 
@@ -161,59 +176,54 @@ async function initDatabase() {
         sender_id INTEGER NOT NULL,
         body TEXT NOT NULL,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (thread_id) REFERENCES chat_threads(id) ON DELETE CASCADE
+        FOREIGN KEY (thread_id) REFERENCES chat_threads(id) ON DELETE CASCADE,
+        FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE
       );
       CREATE INDEX IF NOT EXISTS idx_chat_messages_thread ON chat_messages(thread_id);
-    `;
-    database.exec(createChatTables);
-
-    // 인덱스
-    const createIndexes = `
-      CREATE INDEX IF NOT EXISTS idx_posts_created ON posts(created_at);
-      CREATE INDEX IF NOT EXISTS idx_comments_post ON comments(post_id);
-    `;
-    database.exec(createIndexes);
+      CREATE INDEX IF NOT EXISTS idx_chat_messages_ts ON chat_messages(created_at);
+    `);
 
     console.log('✅ 데이터베이스 테이블/마이그레이션 완료');
 
-    // 테스트 유저 (개발용)
-    const testUser = database.prepare('SELECT COUNT(*) as count FROM users').get();
-    if (testUser.count === 0) {
+    // 개발 편의를 위한 테스트 유저 자동 생성(비어 있을 때만)
+    const { count } = database.prepare('SELECT COUNT(*) as count FROM users').get();
+    if (count === 0) {
       const bcrypt = require('bcrypt');
       const testPassword = await bcrypt.hash('test123', 10);
-      const insertTestUser = database.prepare(`
+      const insertUser = database.prepare(`
         INSERT INTO users (name, email, password_hash, organization, nickname, show_nickname)
         VALUES (?, ?, ?, ?, ?, ?)
       `);
-      insertTestUser.run('테스트 사용자', 'test@innosearch.com', testPassword, 'InnoSearch Lab', '테스트사용자', 1);
-      console.log('✅ 테스트 사용자 생성 완료 (test@innosearch.com / test123)');
+      insertUser.run('테스트 사용자', 'test@innosearch.com', testPassword, 'InnoSearch Lab', '테스트사용자', 1);
+      console.log('✅ 테스트 사용자 생성 완료 (이메일: test@innosearch.com / 비번: test123)');
     }
-
   } catch (error) {
     console.error('❌ 데이터베이스 초기화 실패:', error);
     throw error;
   }
 }
 
+// ─────────────────────────────────────────────────────────────
 // 사용자 쿼리
+// ─────────────────────────────────────────────────────────────
 const userQueries = {
   findByEmail: (email) => {
     const db = getDatabase();
-    const stmt = db.prepare('SELECT * FROM users WHERE email = ?');
-    return stmt.get(email);
+    return db.prepare('SELECT * FROM users WHERE email = ?').get(email);
   },
   findById: (id) => {
     const db = getDatabase();
-    const stmt = db.prepare('SELECT id, name, email, organization, nickname, show_nickname, created_at FROM users WHERE id = ?');
-    return stmt.get(id);
+    return db.prepare(`
+      SELECT id, name, email, organization, nickname, show_nickname, created_at
+      FROM users WHERE id = ?
+    `).get(id);
   },
   create: (userData) => {
     const db = getDatabase();
-    const stmt = db.prepare(`
+    return db.prepare(`
       INSERT INTO users (name, email, password_hash, organization, nickname, show_nickname)
       VALUES (?, ?, ?, ?, ?, ?)
-    `);
-    return stmt.run(
+    `).run(
       userData.name,
       userData.email,
       userData.password_hash,
@@ -224,99 +234,94 @@ const userQueries = {
   },
   emailExists: (email) => {
     const db = getDatabase();
-    const stmt = db.prepare('SELECT COUNT(*) as count FROM users WHERE email = ?');
-    const result = stmt.get(email);
-    return result.count > 0;
+    const { count } = db.prepare('SELECT COUNT(*) as count FROM users WHERE email = ?').get(email);
+    return count > 0;
   },
   nicknameExists: (nickname) => {
     const db = getDatabase();
-    const stmt = db.prepare('SELECT COUNT(*) as count FROM users WHERE nickname = ?');
-    const result = stmt.get(nickname);
-    return result.count > 0;
+    const { count } = db.prepare('SELECT COUNT(*) as count FROM users WHERE nickname = ?').get(nickname);
+    return count > 0;
   },
   updateShowNickname: (id, show) => {
     const db = getDatabase();
-    const stmt = db.prepare('UPDATE users SET show_nickname = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?');
-    return stmt.run(show ? 1 : 0, id);
+    return db.prepare('UPDATE users SET show_nickname = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?')
+      .run(show ? 1 : 0, id);
   }
 };
 
+// ─────────────────────────────────────────────────────────────
 // 게시판 쿼리
+// ─────────────────────────────────────────────────────────────
 const boardQueries = {
-  // 새 게시글 생성
   createPost: (title, content, userId) => {
     const db = getDatabase();
     const now = new Date().toISOString();
-    const stmt = db.prepare('INSERT INTO posts (title, content, user_id, created_at) VALUES (?, ?, ?, ?)');
-    return stmt.run(title, content, userId, now);
+    return db.prepare(
+      'INSERT INTO posts (title, content, user_id, created_at) VALUES (?, ?, ?, ?)'
+    ).run(title, content, userId, now);
   },
 
-  // ✅ 모든 게시글 목록 (author_id 포함)
   getAllPosts: () => {
     const db = getDatabase();
-    const stmt = db.prepare(`
-        SELECT 
-            p.id, 
-            p.title, 
-            p.created_at,
-            u.id AS author_id,
-            CASE WHEN u.show_nickname = 1 THEN u.nickname ELSE u.name END AS author
-        FROM posts p
-        JOIN users u ON p.user_id = u.id
-        ORDER BY p.id DESC
-    `);
-    return stmt.all();
+    return db.prepare(`
+      SELECT 
+        p.id, 
+        p.title, 
+        p.created_at,
+        u.id AS author_id,
+        CASE WHEN u.show_nickname = 1 THEN u.nickname ELSE u.name END AS author
+      FROM posts p
+      JOIN users u ON p.user_id = u.id
+      ORDER BY p.id DESC
+    `).all();
   },
 
-  // ID로 특정 게시글 조회(표시 이름 포함)
   findPostById: (id) => {
     const db = getDatabase();
-    const stmt = db.prepare(`
-        SELECT 
-            p.id, 
-            p.title, 
-            p.content, 
-            p.created_at, 
-            p.user_id, 
-            CASE WHEN u.show_nickname = 1 THEN u.nickname ELSE u.name END AS author
-        FROM posts p
-        JOIN users u ON p.user_id = u.id
-        WHERE p.id = ?
-    `);
-    return stmt.get(id);
+    return db.prepare(`
+      SELECT 
+        p.id, 
+        p.title, 
+        p.content, 
+        p.created_at, 
+        p.user_id, 
+        CASE WHEN u.show_nickname = 1 THEN u.nickname ELSE u.name END AS author
+      FROM posts p
+      JOIN users u ON p.user_id = u.id
+      WHERE p.id = ?
+    `).get(id);
   },
 
-  // 댓글 목록
   getCommentsByPostId: (postId) => {
     const db = getDatabase();
-    const stmt = db.prepare(`
-        SELECT 
-            c.id, 
-            c.post_id, 
-            c.user_id, 
-            c.content, 
-            c.created_at,
-            CASE WHEN u.show_nickname = 1 THEN u.nickname ELSE u.name END AS display_name
-        FROM comments c
-        JOIN users u ON c.user_id = u.id
-        WHERE c.post_id = ?
-        ORDER BY c.created_at ASC, c.id ASC
-    `);
-    return stmt.all(postId);
+    return db.prepare(`
+      SELECT 
+        c.id, 
+        c.post_id, 
+        c.user_id, 
+        c.content, 
+        c.created_at,
+        CASE WHEN u.show_nickname = 1 THEN u.nickname ELSE u.name END AS display_name
+      FROM comments c
+      JOIN users u ON c.user_id = u.id
+      WHERE c.post_id = ?
+      ORDER BY c.created_at ASC, c.id ASC
+    `).all(postId);
   },
 
-  // 새 댓글 추가
   createComment: (postId, userId, content) => {
     const db = getDatabase();
     const now = new Date().toISOString();
-    const stmt = db.prepare(`
+    return db.prepare(`
       INSERT INTO comments (post_id, user_id, content, created_at) VALUES (?, ?, ?, ?)
-    `);
-    return stmt.run(postId, userId, content, now);
+    `).run(postId, userId, content, now);
   },
 };
 
-// 채팅 쿼리 (1:1)
+// ─────────────────────────────────────────────────────────────
+// 채팅 쿼리 (1:1 DM)
+//  - 스레드 쌍(user_a, user_b)은 항상 오름차순으로 정규화해 중복 방지
+// ─────────────────────────────────────────────────────────────
 const chatQueries = {
   _pair: (a, b) => {
     const aNum = Number(a), bNum = Number(b);
@@ -327,67 +332,63 @@ const chatQueries = {
     const db = getDatabase();
     const [a, b] = chatQueries._pair(me, peer);
 
-    // 먼저 존재 확인
-    const findStmt = db.prepare(`
-      SELECT id FROM chat_threads 
-      WHERE (user_a = ? AND user_b = ?) OR (user_a = ? AND user_b = ?)
-      LIMIT 1
-    `);
-    const found = findStmt.get(a, b, a, b);
-    if (found && found.id) return found.id;
+    // 존재 확인 (정규화된 한 방향만)
+    const found = db.prepare(`
+      SELECT id FROM chat_threads WHERE user_a = ? AND user_b = ? LIMIT 1
+    `).get(a, b);
+    if (found?.id) return found.id;
 
-    // 없으면 생성 (UNIQUE(user_a,user_b) 보장)
-    const ins = db.prepare(`
+    // 생성
+    const r = db.prepare(`
       INSERT INTO chat_threads (user_a, user_b) VALUES (?, ?)
-    `);
-    const r = ins.run(a, b);
+    `).run(a, b);
     return r.lastInsertRowid;
   },
 
   listMyThreads: (me) => {
     const db = getDatabase();
-    const stmt = db.prepare(`
+    return db.prepare(`
       SELECT id, user_a, user_b, created_at, updated_at
       FROM chat_threads
       WHERE user_a = ? OR user_b = ?
-      ORDER BY updated_at DESC
-    `);
-    return stmt.all(me, me);
+      ORDER BY updated_at DESC, id DESC
+    `).all(me, me);
   },
 
   getThread: (id) => {
     const db = getDatabase();
-    const stmt = db.prepare(`
+    return db.prepare(`
       SELECT id, user_a, user_b FROM chat_threads WHERE id = ?
-    `);
-    return stmt.get(id);
+    `).get(id);
   },
 
   listMessages: (threadId) => {
     const db = getDatabase();
-    const stmt = db.prepare(`
+    return db.prepare(`
       SELECT id, thread_id, sender_id, body, created_at
       FROM chat_messages
       WHERE thread_id = ?
       ORDER BY created_at ASC, id ASC
-    `);
-    return stmt.all(threadId);
+    `).all(threadId);
   },
 
   sendMessage: (threadId, senderId, body) => {
     const db = getDatabase();
     const now = new Date().toISOString();
-    const insMsg = db.prepare(`
-      INSERT INTO chat_messages (thread_id, sender_id, body, created_at) VALUES (?, ?, ?, ?)
-    `);
-    const r = insMsg.run(threadId, senderId, body, now);
 
-    const updThread = db.prepare(`
-      UPDATE chat_threads SET updated_at = ? WHERE id = ?
-    `);
-    updThread.run(now, threadId);
+    const tx = db.transaction(() => {
+      const r = db.prepare(`
+        INSERT INTO chat_messages (thread_id, sender_id, body, created_at)
+        VALUES (?, ?, ?, ?)
+      `).run(threadId, senderId, body, now);
 
-    return r;
+      db.prepare(`UPDATE chat_threads SET updated_at = ? WHERE id = ?`)
+        .run(now, threadId);
+
+      return r;
+    });
+
+    return tx();
   }
 };
 

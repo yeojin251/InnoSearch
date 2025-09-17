@@ -124,10 +124,16 @@
     </div>
   </footer>
 
-  <!-- 스크립트 -->
-  <script src="./js/apiClient.js"></script>
-  <script src="./js/session.js"></script>
-  <script src="./js/matching.js"></script>
-  <script src="./js/home.js"></script>
+  <!-- 1) 소켓과 API/세션 먼저 -->
+<script src="/socket.io/socket.io.js"></script>
+<script src="./js/apiClient.js"></script>
+<script src="./js/session.js"></script>
+
+<!-- 2) DM 모달 (의존성 모두 준비된 뒤) -->
+<script src="./js/chatModal.js"></script>
+
+<!-- 3) 나머지 페이지별 스크립트 -->
+<script src="./js/matching.js"></script>
+<script src="./js/home.js"></script>
 </body>
 </html>
