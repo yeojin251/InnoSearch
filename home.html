@@ -6,7 +6,7 @@
   <title>InnoSearch</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./css/styles.css" />
 </head>
 
@@ -42,25 +42,29 @@
   </header>
 
   <main>
-    <!-- 히어로: 홈 빠른 매칭 (기술명만) -->
-    <section class="hero">
+    <!-- ===== Home Hero (기존 어두운 그라디언트 + 좌측 정렬) ===== -->
+    <section class="hero align-left">
       <div class="container hero-inner">
         <div class="hero-copy">
-          <div class="hero-tool">
-            <h3>유망기술 탐색</h3>
-            <div class="tool-card">
-              <div class="field">
-                <label class="sr-only" for="q">기술명/키워드</label>
-                <input id="q" type="text" placeholder="기술명 또는 키워드 입력 (예: 친환경)" />
-              </div>
-              <div class="actions">
-                <button class="btn primary" id="matchBtn">탐색하기</button>
-              </div>
-              <div id="matchingResults"></div>
-            </div>
+          <!-- 제목: ‘만남’과 ‘혁신’ 다른 색 강조, 흰색 베이스 -->
+          <h1 class="hero-lead">
+            기술과 파트너의 <span class="accent">만남</span>으로<br>
+            시작되는 <span class="accent2">혁신</span>
+          </h1>
+
+          <!-- 부제목: 흰색, 제목보다 작게 -->
+          <p class="hero-sub">
+            단순한 연결을 넘어, 성공의 가능성을 만듭니다.<br>
+            혁신적인 아이디어 비즈니스가 되는 곳, 당신의 파트너를 만나보세요.
+          </p>
+
+          <!-- CTA: “지금 시작하기”만 유지 -->
+          <div class="hero-cta">
+            <a href="./login.html" class="btn primary">지금 시작하기</a>
           </div>
         </div>
 
+        <!-- 데코(기존 동그란 공 유지) -->
         <div class="hero-art" aria-hidden="true">
           <div class="bubble b1"></div>
           <div class="bubble b2"></div>
@@ -68,10 +72,19 @@
         </div>
       </div>
 
+      <!-- 파도 -->
       <svg class="hero-wave wave-up" viewBox="0 0 1440 160" preserveAspectRatio="none" aria-hidden="true">
         <path d="M0,64 C180,128 360,0 540,26.7 C720,53.3 900,160 1080,144 C1260,128 1350,96 1440,80 L1440,160 L0,160 Z"/>
       </svg>
+
+      <!-- JS 호환용 숨김 더미 (matching.js 안전) -->
+      <div style="display:none">
+        <input id="q" />
+        <button id="matchBtn"></button>
+        <div id="matchingResults"></div>
+      </div>
     </section>
+    <!-- ===== /Home Hero ===== -->
 
     <!-- 최신 리포트 -->
     <section id="updates" class="section">
@@ -124,35 +137,28 @@
     </div>
   </footer>
 
-  <!-- AI 위젯 컨테이너 (빈 div만 두면 JS가 내부를 생성) -->
-<div id="ai-fab-root"></div>
+  <!-- AI 위젯 컨테이너 -->
+  <div id="ai-fab-root"></div>
 
-<!-- 페이지 컨텍스트(선택) — 상세페이지라면 기술명/ID/요약을 넣어주세요 -->
-<script>
-  window.__innosearch_context = {
-    page: 'tech-detail',         // 'home' | 'tech' | 'tech-detail'
-    techId: 'T-2025-00123',
-    techName: '친환경 포장재 복합소재',
-    techSummary: '폐플라스틱 재활용 기반 생분해성 복합소재 ...',
-    keywords: ['바이오플라스틱','친환경','패키징']
-  };
-</script>
+  <!-- 페이지 컨텍스트(선택) -->
+  <script>
+    window.__innosearch_context = { page: 'home' };
+  </script>
 
-<!-- 위젯 스크립트 -->
-<script defer src="./js/aiWidget.js"></script>
-<link rel="stylesheet" href="./css/aiWidget.css">
+  <!-- 위젯 스크립트 -->
+  <script defer src="./js/aiWidget.js"></script>
+  <link rel="stylesheet" href="./css/aiWidget.css">
 
+  <!-- 1) 소켓과 API/세션 -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="./js/apiClient.js"></script>
+  <script src="./js/session.js"></script>
 
-  <!-- 1) 소켓과 API/세션 먼저 -->
-<script src="/socket.io/socket.io.js"></script>
-<script src="./js/apiClient.js"></script>
-<script src="./js/session.js"></script>
+  <!-- 2) DM 모달 -->
+  <script src="./js/chatModal.js"></script>
 
-<!-- 2) DM 모달 (의존성 모두 준비된 뒤) -->
-<script src="./js/chatModal.js"></script>
-
-<!-- 3) 나머지 페이지별 스크립트 -->
-<script src="./js/matching.js"></script>
-<script src="./js/home.js"></script>
+  <!-- 3) 페이지별 스크립트 -->
+  <script src="./js/matching.js"></script>
+  <script src="./js/home.js"></script>
 </body>
 </html>
