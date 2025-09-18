@@ -264,3 +264,63 @@ img{ display:block; width:100%; height:auto; border-radius: 14px; }
 @media (max-width: 640px){
   .hero .bubble{ filter: blur(14px); opacity:.5; }
 }
+
+/* =================================== */
+/* 반응형 헤더 스타일 (최종 수정)      */
+/* =================================== */
+
+/* 햄버거 버튼 기본 스타일 */
+.hamburger-button {
+    display: none; /* 평소(PC)에는 숨김 */
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 16px; /* 로그인 버튼과 간격 */
+    z-index: 1001;
+}
+
+.hamburger-button svg {
+    color: #ffffff; /* 아이콘 색상 */
+}
+
+
+/* 화면 너비가 992px 이하일 때 적용 */
+@media (max-width: 992px) {
+
+    /* 기존 메뉴 숨기기 */
+    .site-header .menu {
+        display: none;
+    }
+    
+    /* 햄버거 버튼 보여주기 */
+    .hamburger-button {
+        display: block;
+    }
+
+    /* JavaScript로 is-open 클래스가 추가될 때의 스타일 */
+    .site-header .menu.is-open {
+        display: flex; /* is-open 클래스가 붙으면 메뉴를 보여줌 */
+        position: absolute;
+        top: 60px; /* 헤더 높이 바로 아래 */
+        left: 0;
+        right: 0;
+        width: 100%;
+        background-color: #0e1330;
+        font-style: #ffffff;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        flex-direction: column; /* 세로로 쌓기 */
+        padding: 10px 0;
+        z-index: 1000;
+    }
+
+    /* 모바일 메뉴 안의 링크 스타일 */
+    .site-header .menu.is-open a {
+        padding: 15px 20px;
+        text-align: center;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    .site-header .menu.is-open a:last-child {
+        border-bottom: none;
+    }
+}

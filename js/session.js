@@ -99,3 +99,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 });
+
+// -- 반응형 햄버거 메뉴 기능 --
+document.addEventListener('DOMContentLoaded', () => {
+    const hamburgerButton = document.querySelector('.hamburger-button');
+    const menu = document.querySelector('.site-header .menu');
+
+    if (hamburgerButton && menu) {
+        hamburgerButton.addEventListener('click', () => {
+            // menu에 is-open 클래스를 추가하거나 제거
+            menu.classList.toggle('is-open');
+        });
+    }
+});
