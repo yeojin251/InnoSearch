@@ -38,11 +38,11 @@ app.use(cookieParser());
 
 // 세션 (개발용 MemoryStore, 운영은 Redis 권장)
 const sessionMiddleware = session({
-  secret: process.env.SESSION_SECRET || 'innosearch-secret-key-2024',
+  secret: process.env.SESSION_SECRET || 'innosearch-secret-key-2025',
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: false,          // HTTPS 사용 시 true로
+    secure: process.env.NODE_ENV === 'production', // 배포 환경에서는 true, 로컬에서는 false
     httpOnly: true,
     sameSite: 'lax',
     maxAge: 24 * 60 * 60 * 1000
